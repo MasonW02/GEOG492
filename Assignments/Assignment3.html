@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<!-- saved from url=(0086)file:///R:/GEOG492_35808_Spring2025/Student_Data/mweybri2/Assignment3/Assignment3.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+     
+
+     <title>Owners vs Renters Map</title>
+
+     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+
+     <link href="./Assignment3_files/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+     <script src="./Assignment3_files/mapbox-gl.js.download"></script>
+
+     <link href="./Assignment3_files/mapbox-gl.css" rel="stylesheet">
+
+     <style>
+
+         body { margin:0; padding:0; }
+
+         #map { position:absolute; top:0; bottom:0; width:100%; }
+
+           /*  stlye for paragraph tags */
+       p {
+         color: white;
+       }
+    
+       /* style for heading level 4 tags */
+       h4 {
+         color: white;
+         margin-left: 10px;
+       }
+    
+       /*  style for items with the class "LegendContainer" */
+       .LegendContainer {
+         position: absolute;
+         bottom: 20px;
+         left: 20px;
+         z-index: 2;
+         width: 300px;
+         height: 40px;
+         background: rgba(80, 80, 80, .75);
+         transition: width 2s, height 2s; /* this is the time it takes for the container to transition */
+         border-radius: 7px;
+       }
+    
+       /*  style for items with the class "descriptionPanel" */
+       .descriptionPanel {
+         position: absolute;
+         bottom: 65px;
+         left: 20px;
+         z-index: 2;
+         width: 300px;
+         height: 40px;
+         background: rgba(80, 80, 80, .75);
+         transition: width 2s, height 2s;
+         overflow: hidden;
+         border-radius: 7px;
+       }
+    
+       /*  style for items with the class "descriptionPanel" when active */
+       .LegendContainer:active {
+         width: 240px;
+         height: 250px;
+       }
+    
+       /* style for items with the class "legendItem" */
+       .legendItem {
+           margin: 0px;
+           padding-left: 10px;
+           display:inline-block;
+           margin:auto;
+           transform: translate(50%, 50%);
+       }
+            
+    
+       /* style for items with the class "layerDescription" */
+       .layerDescription {
+         color: white;
+         padding-left: 10px;
+       }
+    
+            
+       .renter {
+             color:#d16bfa;
+       }
+       .owner{
+             color:#2ef538;
+       }
+    
+       /* style for items with the class "chevron" */
+       .chevron {
+         position: relative;
+         margin-left: 45%;
+         font-size: x-large;
+         color: white;
+       }
+
+     </style>
+
+ </head>
+
+ <body>
+
+
+
+   <div id="map" class="mapboxgl-map"><div class="mapboxgl-canary" style="visibility: hidden;"></div><div class="mapboxgl-canvas-container mapboxgl-interactive mapboxgl-touch-drag-pan mapboxgl-touch-zoom-rotate"><canvas class="mapboxgl-canvas" tabindex="0" aria-label="Map" role="region" width="350" height="750" style="width: 279.2px; height: 600px;"></canvas></div><div class="mapboxgl-control-container"><div class="mapboxgl-ctrl-top-left"></div><div class="mapboxgl-ctrl-top-right"><div class="mapboxgl-ctrl mapboxgl-ctrl-group"><button class="mapboxgl-ctrl-zoom-in" type="button" aria-label="Zoom in" aria-disabled="false"><span class="mapboxgl-ctrl-icon" aria-hidden="true" title="Zoom in"></span></button><button class="mapboxgl-ctrl-zoom-out" type="button" aria-label="Zoom out" aria-disabled="false"><span class="mapboxgl-ctrl-icon" aria-hidden="true" title="Zoom out"></span></button><button class="mapboxgl-ctrl-compass" type="button" aria-label="Reset bearing to north"><span class="mapboxgl-ctrl-icon" aria-hidden="true" title="Reset bearing to north" style="transform: rotate(0deg);"></span></button></div></div><div class="mapboxgl-ctrl-bottom-left"><div class="mapboxgl-ctrl" style="display: block;"><a class="mapboxgl-ctrl-logo" target="_blank" rel="noopener nofollow" href="https://www.mapbox.com/" aria-label="Mapbox logo"></a></div></div><div class="mapboxgl-ctrl-bottom-right"><div class="mapboxgl-ctrl mapboxgl-ctrl-attrib mapboxgl-compact"><button class="mapboxgl-ctrl-attrib-button" type="button"><span class="mapboxgl-ctrl-icon" aria-hidden="true" title="Toggle attribution"></span></button><div class="mapboxgl-ctrl-attrib-inner"><a href="https://www.mapbox.com/about/maps/" target="_blank" title="Mapbox" aria-label="Mapbox">© Mapbox</a> <a href="https://www.openstreetmap.org/copyright/" target="_blank" title="OpenStreetMap" aria-label="OpenStreetMap">© OpenStreetMap</a> <a class="mapbox-improve-map" href="https://apps.mapbox.com/feedback/?owner=masonw02&amp;id=cm9sr7pvx00n301so2c91aowd&amp;access_token=pk.eyJ1IjoibWFzb253MDIiLCJhIjoiY205OTEzcXBpMDk0dTJpcHhseDl4dWNjOSJ9.tSqKSLEVU1A0vQ8kKHhxkw#/-74/40.73/11" target="_blank" aria-label="Improve this map" rel="noopener nofollow">Improve this map</a></div></div></div></div><div class="mapboxgl-canary" style="visibility: hidden;"></div><div class="mapboxgl-canvas-container mapboxgl-interactive mapboxgl-touch-drag-pan mapboxgl-touch-zoom-rotate"><canvas class="mapboxgl-canvas" tabindex="0" aria-label="Map" role="region" width="260" height="750" style="width: 207.2px; height: 600px;"></canvas></div><div class="mapboxgl-control-container"><div class="mapboxgl-ctrl-top-left"></div><div class="mapboxgl-ctrl-top-right"><div class="mapboxgl-ctrl mapboxgl-ctrl-group"><button class="mapboxgl-ctrl-zoom-in" type="button" aria-label="Zoom in" aria-disabled="false"><span class="mapboxgl-ctrl-icon" aria-hidden="true" title="Zoom in"></span></button><button class="mapboxgl-ctrl-zoom-out" type="button" aria-label="Zoom out" aria-disabled="false"><span class="mapboxgl-ctrl-icon" aria-hidden="true" title="Zoom out"></span></button><button class="mapboxgl-ctrl-compass" type="button" aria-label="Reset bearing to north"><span class="mapboxgl-ctrl-icon" aria-hidden="true" title="Reset bearing to north" style="transform: rotate(0deg);"></span></button></div></div><div class="mapboxgl-ctrl-bottom-left"><div class="mapboxgl-ctrl" style="display: block;"><a class="mapboxgl-ctrl-logo mapboxgl-compact" target="_blank" rel="noopener nofollow" href="https://www.mapbox.com/" aria-label="Mapbox logo"></a></div></div><div class="mapboxgl-ctrl-bottom-right"><div class="mapboxgl-ctrl mapboxgl-ctrl-attrib mapboxgl-compact"><button class="mapboxgl-ctrl-attrib-button" type="button"><span class="mapboxgl-ctrl-icon" aria-hidden="true" title="Toggle attribution"></span></button><div class="mapboxgl-ctrl-attrib-inner"><a href="https://www.mapbox.com/about/maps/" target="_blank" title="Mapbox" aria-label="Mapbox">© Mapbox</a> <a href="https://www.openstreetmap.org/copyright/" target="_blank" title="OpenStreetMap" aria-label="OpenStreetMap">© OpenStreetMap</a> <a class="mapbox-improve-map" href="https://apps.mapbox.com/feedback/?owner=masonw02&amp;id=cm9sr7pvx00n301so2c91aowd&amp;access_token=pk.eyJ1IjoibWFzb253MDIiLCJhIjoiY205OTEzcXBpMDk0dTJpcHhseDl4dWNjOSJ9.tSqKSLEVU1A0vQ8kKHhxkw#/-122.798/45.524/8" target="_blank" aria-label="Improve this map" rel="noopener nofollow">Improve this map</a></div></div></div></div></div>
+
+    <!-- map description panel -->
+   <div class="descriptionPanel" id="descriptionPanel" style="height: 250px;">
+     <span onclick="panelSelect()" id="glyph" class="chevron glyphicon glyphicon-chevron-down"></span>
+     <hr>
+     <h4>WHAT AM I LOOKING AT?</h4>
+     <p style="margin-left: 10px; margin-right: 10px;">
+       This is a map showing every single person in the Portland Area as a dot. Data is taken from the 2017 US Census, and is                   accurate at the level of a block; however, within each block location is randomized. Points are colored based on the number of home owners versus renters on a block.
+     </p>
+   </div>
+    
+    <!-- map legend -->
+    <div class="LegendContainer">
+    <div class="legendItem">
+     <span class="owner">⬤</span>
+     <span class="layerDescription">Owners</span>
+    </div>
+    <div class="legendItem">
+     <span class="renter">⬤</span>
+     <span class="layerDescription">Renters</span>
+    </div>
+   </div>
+
+   <script>
+
+     mapboxgl.accessToken = 'pk.eyJ1IjoibWFzb253MDIiLCJhIjoiY205OTEzcXBpMDk0dTJpcHhseDl4dWNjOSJ9.tSqKSLEVU1A0vQ8kKHhxkw'; 
+
+     var map = new mapboxgl.Map({
+
+         container: 'map', // container id
+         style: 'mapbox://styles/masonw02/cm9sr7pvx00n301so2c91aowd', // stylesheet location
+         center: [-122.676483,45.523064],
+         zoom: 10
+       
+     });
+
+     map.addControl(new mapboxgl.NavigationControl());
+    
+    //legend interaction
+      var state = { panelOpen: true };
+
+      function panelSelect(){
+        if(state.panelOpen){
+          document.getElementById('descriptionPanel').style.height = '26px';
+          document.getElementById('glyph').className = "chevron glyphicon glyphicon-chevron-up";
+          state.panelOpen = false;
+        } else {
+          document.getElementById('descriptionPanel').style.height = '250px';
+          document.getElementById('glyph').className = "chevron glyphicon glyphicon-chevron-down";
+          state.panelOpen = true;
+        }
+      }
+   </script>
+
+   
+
+ </body></html>
