@@ -1,0 +1,259 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	    
+    <title>Swipe between maps</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <script src="./Assignment4_files/mapbox-gl.js.download"></script>
+    <link href="./Assignment4_files/mapbox-gl.css" rel="stylesheet">
+  
+    <!-- JS and CSS for the swipe plugin -->
+    <script src="./Assignment4_files/mapbox-gl-compare.js.download"></script>
+    <link rel="stylesheet" href="./Assignment4_files/mapbox-gl-compare.css" type="text/css">
+	     <style>
+          body { margin:0; padding:0;}
+         
+          /* styling for map title */
+          #title {
+            text-align: center;
+            background: #01351c;
+            color: white;
+            padding: 1px;
+            font-family: Arial, sans-serif;
+            z-index: 2;
+            position: relative; /* Make sure it sits *above* the absolute map */
+          }
+         
+          /* top adjusted to make room for title */
+          #comparison-container {
+              position: absolute;
+              top: 50px;
+              bottom: 0;
+              width: 100%;
+              overflow: hidden;
+          }
+            
+          body* {
+              -webkit-touch-callout: none;
+              -webkit-user-select: none;
+              -moz-user-select: none;
+              -ms-user-select: none;
+               user-select: none;
+        	}
+        		 
+           .map {
+               position: absolute;
+               top: 0;
+               bottom: 0;
+               width: 100%;
+           }
+
+           /* legend styling */
+           .legend {
+                position: absolute;
+                bottom: 30px;
+                left: 10px;
+                padding: 10px;
+                background: white;
+                border-radius: 5px;
+                font-family: Arial, sans-serif;
+                font-size: 12px;
+                z-index: 1;
+                line-height: 18px;
+                color: #333;
+              }
+            
+            .legend-key {
+              display: inline-block;
+              width: 15px;
+              height: 15px;
+              margin-right: 5px;
+              vertical-align: middle;
+            }
+
+	     </style>
+  </head>
+	<body>
+
+    <!-- title div -->
+    <div id="title">
+      <h2>Percentage of Owners vs Percentage of Renters by Census Tract in the Portland Metro Area</h2>
+      <h3>Left: Owner % -- Right: Renter %</h3>
+    </div>
+
+    <!-- maps div -->
+		<div id="comparison-container">
+	     		<div id="owners" class="map"></div>  <!-- div for owners map div -->
+	     		<div id="renters" class="map"></div> <!--  div for renters map div -->
+    </div>
+      
+    <!--legend div -->
+    <div id="legend" class="legend"><h4>% Renters/Owners</h4></div>
+
+    <script>
+      // III.3. add your Mapbox access token and map variable here!
+      mapboxgl.accessToken = 'pk.eyJ1IjoibWFzb253MDIiLCJhIjoiY205OTEzcXBpMDk0dTJpcHhseDl4dWNjOSJ9.tSqKSLEVU1A0vQ8kKHhxkw';
+      
+      var ownerMap = new mapboxgl.Map({
+        container: 'owners', // owners map div 
+        style: 'mapbox://styles/mapbox/dark-v11', // Mapbox dark style 
+        center: [-122.679565, 45.512794], 
+        zoom: 9 //adjusted to account for title header
+      });
+    
+          // VI.1. add your compare container variables here!
+      var renterMap = new mapboxgl.Map({
+        container: 'renters', // owners map div 
+        style: 'mapbox://styles/mapbox/light-v11', // Mapbox light style so we can observe the swipe
+        center: [-122.679565, 45.512794], // Use the same center as your other map so that they are perfectly aligned
+        zoom: 9
+      });
+    
+          // Create a popup, but don't add it to the map yet.
+      var popup = new mapboxgl.Popup({
+         closeButton: false,
+         closeOnClick: false
+         });
+    
+      ownerMap.on('load', function() {
+        // the rest of the owner data code will go in here
+        ownerMap.addLayer({
+          id: 'Owner Data',
+          type: "fill",
+          source: {
+            type: 'vector',
+            url: 'mapbox://masonw02.7mzdaong'  //input your tileset ID url e.g. 'mapbox://jomerson.6ykhlovc' 
+          },
+          'source-layer': 'Owner-Renter-Pop-2kjwig', //input your source layer name e.g. 'Owner-Renter-Pop-ca08iw'
+          paint: {
+            'fill-color': [  
+              "step",
+              ["get", "Own"],
+              "#cef5bf",       //changed colors to a green based color scheme
+              17.0,
+              "#99f56f ",
+              22.0,
+              "#24de0e",
+              27.0,
+              "#1a9c18",
+              32.0,
+              "#086309"
+            ],
+            "fill-opacity": 0.7 
+          } 
+        });
+        ownerMap.on('mousemove', 'Owner Data', function (e) {
+            
+             // Change the cursor style as a UI indicator.
+             ownerMap.getCanvas().style.cursor = 'pointer';
+    
+             var coordinates = e.lngLat;
+             var description = e.features[0].properties.Own;
+    
+             // Populate the popup and set its coordinates
+             // based on the feature found.
+             popup.setLngLat(coordinates)
+                .setHTML("Owners:" + description + "%")
+                .addTo(ownerMap);
+         });
+    
+         ownerMap.on('mouseleave', 'Owner Data', function () {
+             ownerMap.getCanvas().style.cursor = '';
+             popup.remove();
+         });
+      });
+        
+       renterMap.on('load', function() {
+       // the rest of the renter data code will go in here
+        renterMap.addLayer({
+          id: 'Renter Data',
+          type: "fill",
+          source: {
+            type: 'vector',
+            url: 'mapbox://masonw02.7mzdaong' //input your tileset ID URL
+          },
+            'source-layer': 'Owner-Renter-Pop-2kjwig', //input your source layer name e.g. Owner-Renter-Pop-dr7310
+          paint: {
+            'fill-color': [
+              "step",
+              ["get", "Rent"],
+              "#cef5bf",
+              17.0,
+              "#99f56f ",
+              22.0,
+              "#24de0e",
+              27.0,
+              "#1a9c18",
+              32.0,
+              "#086309"
+            ],
+            "fill-opacity": 0.7
+          }
+        });
+        renterMap.on('mousemove', 'Renter Data', function (e) {
+            
+             // Change the cursor style as a UI indicator.
+             renterMap.getCanvas().style.cursor = 'pointer';
+        
+             var coordinates = e.lngLat;
+             var description = e.features[0].properties.Rent;
+        
+             // Populate the popup and set its coordinates
+             // based on the feature found.
+             popup.setLngLat(coordinates)
+                 .setHTML("Renters: " + description + "%")
+                 .addTo(renterMap);
+         });
+    
+        renterMap.on('mouseleave', 'Renter Data', function () {
+         	renterMap.getCanvas().style.cursor = '';
+         	popup.remove();
+         });
+     });
+        
+      // A selector or reference to HTML element
+        var container = '#comparison-container';
+    
+        var map = new mapboxgl.Compare(ownerMap, renterMap, container, {});
+    
+        //legend script
+        var legend = document.getElementById('legend');
+        
+        var layers = [
+          '0-17%', 
+          '17-22%', 
+          '22-27%', 
+          '27-32%', 
+          '32%+'
+        ];
+
+        //legend colors
+        var colors = [
+          '#cef5bf', 
+          '#99f56f ', 
+          '#24de0e', 
+          '#1a9c18', 
+          '#086309'
+        ];
+
+        //for loop to create legend
+        for (var i = 0; i < layers.length; i++) {
+          var color = colors[i];
+          var layer = layers[i];
+          var item = document.createElement('div');
+        
+          var key = document.createElement('span');
+          key.className = 'legend-key';
+          key.style.backgroundColor = color;
+        
+          var value = document.createElement('span');
+          value.innerHTML = layer;
+          
+          item.appendChild(key);
+          item.appendChild(value);
+          legend.appendChild(item);
+        }
+    
+    </script>
+  </body>
+</html>
