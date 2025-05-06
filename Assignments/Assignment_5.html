@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<!-- saved from url=(0087)file:///R:/GEOG492_35808_Spring2025/Student_Data/mweybri2/Assignment5/Assignment_5.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>Assignment 5</title>
+
+    
+    <!-- JavaScript Libraries-->
+    <script src="./Assignment_5_files/jquery.js.download"></script>
+    <script src="./Assignment_5_files/foundation.js.download"></script>
+
+  
+    <!-- CSS Links -->
+    <link href="./Assignment_5_files/foundation.min.css" rel="stylesheet">
+    <link href="./Assignment_5_files/VersitileLayout.css" rel="stylesheet">
+    
+
+    
+</head>
+
+<body>
+
+    <div class="site-header">
+        <strong class="site-title">Recreational Opportunities in the Washington DC Area</strong>
+    </div>
+
+    <div class="site-main grid-x has-content-open">
+
+        <div class="search-container cell medium-3 large-2">
+            <input type="text" placeholder="Search..." class="search">
+            <ul class="search-results no-bullet">
+                <li>Search Result 1</li>
+                <li>Search Result 2</li>
+                <li>Search Result 3</li>
+            </ul>
+        </div>
+        
+        <div class="map-container cell medium-auto large-order-2">
+             <!--  ADD iframe here, inside the versitle layout's map container (VI.2.)   -->
+          	 <iframe src="./Assignment_5_files/Assignment5.html" title="Map"></iframe>
+        </div>
+
+        <!--  Sidebar panel  -->
+        <div class="sidebar cell medium-3 large-2 large-order-1 show-for-medium">
+            <h5>Sidebar</h5>
+            <ul>
+                <li><a class="content-link" href="file:///R:/GEOG492_35808_Spring2025/Student_Data/mweybri2/Assignment5/Assignment5.html#">Open Content</a></li>
+                <li>Bars Search Results</li>
+                <li>Theaters Search Results</li>
+<li>Music Venue Search Results</li>
+                <li>Bicycle Station Search Results</li>
+            </ul>
+
+            <hr>
+
+        </div>
+
+        <div class="content-close-button-container">
+            <a href="file:///R:/GEOG492_35808_Spring2025/Student_Data/mweybri2/Assignment5/VersitileLayout.html#" class="content-close-button">×</a>
+        </div>
+        
+        <!--  Content panel  -->
+        <div class="content cell large-5 large-order-3">
+            <h2>Content</h2>
+            <p>This interactive map displays the locations of recreational opportunities in the around the Washington DC area. The types of locations shown on this map are bars, theaters, live music venues, and public bicycle stations. Points on the map can be clicked to reveal further information. The map can be zoomed and panned to an extent, but it is anchored around the DC area.</p>
+        </div>
+
+    </div>
+
+    <script>
+       
+        $(document).ready(function() {
+
+            $('.content-close-button').click(function() {
+                $('.content-close-button').hide();
+                $('.content').hide();
+                $('.site-main').removeClass('has-content-open')
+
+                // When the map is resized programmatically, window resize must be triggered so that the map renders in the newly allotted space.
+                window.dispatchEvent(new Event('resize'));
+
+            });
+
+            $('.content-link').click(function() {
+                $('.content-close-button').show();
+                $('.content').show();
+                $('.site-main').addClass('has-content-open')
+                window.dispatchEvent(new Event('resize'));
+            });
+
+        });
+    </script>
+
+
+
+</body></html>
