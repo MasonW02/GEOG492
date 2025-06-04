@@ -25,15 +25,17 @@
     zoom: 5
   });
 
-  const directions = new MapboxDirections({
-    accessToken: mapboxgl.accessToken,
-    unit: 'imperial',
-    profile: 'mapbox/driving',
-    controls: {
-      inputs: false,
-      instructions: true
-    }
-  });
+const directions = new MapboxDirections({
+  accessToken: mapboxgl.accessToken,
+  unit: 'imperial',
+  profile: 'mapbox/driving',
+  interactive: false, // disables map click for setting origin/destination
+  controls: {
+    inputs: false,
+    instructions: true,
+    profileSwitcher: false
+  }
+});
 
   map.addControl(directions, 'top-left');
 
