@@ -2,189 +2,213 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Ultimate Frisbee Tournament Trips</title>
+  <title>Ultimate Frisbee Trips</title>
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js"></script>
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css" rel="stylesheet" />
   <style>
     body { margin: 0; padding: 0; font-family: sans-serif; }
-    #map { position: absolute; top: 80px; bottom: 0; width: 100%; }
+    #map { position: absolute; top: 40px; bottom: 0; width: 100%; }
     #buttons {
       position: absolute;
-      top: 0;
-      width: 100%;
-      padding: 10px;
-      background: #fff;
-      z-index: 1;
-      display: flex;
-      gap: 10px;
-    }
-    #summary {
-      position: absolute;
-      top: 50px;
-      left: 10px;
+      top: 0; left: 0;
       background: #fff;
       padding: 5px 10px;
       z-index: 1;
-      font-weight: bold;
+      display: flex;
+      gap: 10px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.3);
+    }
+    button {
+      cursor: pointer;
+      padding: 6px 12px;
+      font-size: 14px;
+      border: none;
+      background: #0074D9;
+      color: white;
+      border-radius: 4px;
+    }
+    button:hover {
+      background: #005fa3;
     }
   </style>
 </head>
 <body>
 <div id="buttons">
-  <button onclick="loadSanDiegoTrip()">San Diego</button>
-  <button onclick="loadKnoxvilleTrip()">Knoxville</button>
-  <button onclick="loadWilmingtonTrip()">Wilmington</button>
+  <button onclick="loadSanDiegoTrip()">President's Day Invitational</button>
+  <button onclick="loadKnoxvilleTrip()">Smoky Mountain Inivitational</button>
+  <button onclick="loadWilmingtonTrip()">Easterns</button>
 </div>
-<div id="summary">Total Distance: </div>
 <div id="map"></div>
 
 <script>
   mapboxgl.accessToken = 'pk.eyJ1IjoibWFzb253MDIiLCJhIjoiY205OTEzcXBpMDk0dTJpcHhseDl4dWNjOSJ9.tSqKSLEVU1A0vQ8kKHhxkw';
+
   const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v11',
-    center: [-121.0, 39.0],
-    zoom: 4
+    center: [-121, 39],
+    zoom: 5
   });
 
+  const markers = [];
   let routeIds = [];
-  let markers = [];
 
   function clearMap() {
-    routeIds.forEach(id => {
+    for (const id of routeIds) {
       if (map.getLayer(id)) map.removeLayer(id);
       if (map.getSource(id)) map.removeSource(id);
-    });
+    }
     routeIds = [];
 
-    markers.forEach(marker => marker.remove());
-    markers = [];
-
-    document.getElementById('summary').innerText = 'Total Distance: ';
+    for (const marker of markers) {
+      marker.remove();
+    }
+    markers.length = 0;
   }
 
-  function addMarker(coord, text, color) {
+  function addMarker(coords, label, color) {
     const marker = new mapboxgl.Marker({ color })
-      .setLngLat(coord)
-      .setPopup(new mapboxgl.Popup().setText(text))
+      .setLngLat(coords)
+      .setPopup(new mapboxgl.Popup().setText(label))
       .addTo(map);
     markers.push(marker);
   }
 
-  function updateSummary(meters) {
-    const miles = (meters / 1609.34).toFixed(1);
-    document.getElementById('summary').innerText = `Total Distance: ${miles} miles`;
-  }
-
-  function haversineDistance(coord1, coord2) {
-    const toRad = x => x * Math.PI / 180;
-    const R = 6371e3;
-    const [lon1, lat1] = coord1.map(toRad);
-    const [lon2, lat2] = coord2.map(toRad);
-    const dLat = lat2 - lat1;
-    const dLon = lon2 - lon1;
-    const a = Math.sin(dLat/2)**2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon/2)**2;
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c;
-  }
-
   async function addDrivingRoute(start, end, id) {
-    const res = await fetch(`https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?geometries=geojson&access_token=${mapboxgl.accessToken}`);
+    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?geometries=geojson&access_token=${mapboxgl.accessToken}`;
+    const res = await fetch(url);
     const json = await res.json();
-    const route = json.routes[0];
-    map.addSource(id, { type: 'geojson', data: { type: 'Feature', geometry: route.geometry } });
+    const route = json.routes[0].geometry;
+
+    map.addSource(id, {
+      type: 'geojson',
+      data: {
+        type: 'Feature',
+        geometry: route
+      }
+    });
+
     map.addLayer({
-      id: id,
+      id,
       type: 'line',
       source: id,
-      paint: { 'line-color': '#0074D9', 'line-width': 4 }
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: {
+        'line-color': '#0074D9',
+        'line-width': 4
+      }
     });
+
     routeIds.push(id);
-    return route;
+    return route.coordinates;
   }
 
   function addFlightArc(start, end, id) {
-    const line = {
+    const arc = {
       type: 'Feature',
       geometry: {
         type: 'LineString',
-        coordinates: [start, end]
+        coordinates: interpolateArc(start, end)
       }
     };
-    map.addSource(id, { type: 'geojson', data: line });
+
+    map.addSource(id, {
+      type: 'geojson',
+      data: arc
+    });
+
     map.addLayer({
-      id: id,
+      id,
       type: 'line',
       source: id,
-      paint: { 'line-color': '#FF4136', 'line-width': 2, 'line-dasharray': [2, 4] }
+      layout: {},
+      paint: {
+        'line-color': '#FF4136',
+        'line-width': 2,
+        'line-dasharray': [2, 4]
+      }
     });
+
     routeIds.push(id);
+    return arc.geometry.coordinates;
   }
 
-  function fitRoute(coords) {
-    const bounds = coords.reduce((b, coord) => b.extend(coord), new mapboxgl.LngLatBounds(coords[0], coords[0]));
-    map.fitBounds(bounds, { padding: 50 });
+  function interpolateArc(start, end) {
+    const steps = 50;
+    const arc = [];
+    for (let i = 0; i <= steps; i++) {
+      const lon = start[0] + (end[0] - start[0]) * (i / steps);
+      const lat = start[1] + (end[1] - start[1]) * (i / steps) + Math.sin((Math.PI * i) / steps) * 3;
+      arc.push([lon, lat]);
+    }
+    return arc;
+  }
+
+  function fitRoute(coordinates) {
+    const bounds = new mapboxgl.LngLatBounds();
+    coordinates.forEach(coord => bounds.extend(coord));
+    map.fitBounds(bounds, { padding: 60 });
   }
 
   async function loadSanDiegoTrip() {
     clearMap();
-    const start = [-123.0707, 44.0435];
-    const end = [-117.1755, 32.8210];
-    addMarker(start, 'Start: McArthur Court', 'green');
-    addMarker(end, 'End: California Suites Hotel', 'red');
-    const route = await addDrivingRoute(start, end, 'sd');
-    fitRoute(route.geometry.coordinates);
-    updateSummary(route.distance);
+    const start = [-123.0707, 44.0435]; // McArthur Court
+    const end = [-117.1755, 32.8210]; // California Suites Hotel
+    addMarker(start, "Start: McArthur Court", 'green');
+    addMarker(end, "End: California Suites Hotel", 'red');
+
+    const coords = await addDrivingRoute(start, end, 'sd-route');
+    fitRoute(coords);
   }
 
   async function loadKnoxvilleTrip() {
     clearMap();
+
     const eugene = [-123.0707, 44.0435];
     const pdx = [-122.5951, 45.5887];
-    const dfw = [-97.0381, 32.8998];
-    const tys = [-83.9940, 35.8124];
-    const hotel = [-84.0727, 35.9281];
+    const dfw = [-97.0403, 32.8998];
+    const tys = [-83.9940, 35.8101];
+    const hotel = [-84.0672, 35.9244];
 
-    addMarker(eugene, 'Start: McArthur Court', 'green');
-    addMarker(pdx, 'PDX Airport', 'orange');
-    addMarker(dfw, 'Dallas-Fort Worth', 'orange');
-    addMarker(tys, 'Knoxville Airport', 'orange');
-    addMarker(hotel, 'Holiday Inn Knoxville', 'red');
+    addMarker(eugene, "Start: McArthur Court", 'green');
+    addMarker(pdx, "Portland International Airport", 'orange');
+    addMarker(dfw, "Dallas Fort Worth Airport", 'orange');
+    addMarker(tys, "McGhee Tyson Airport", 'orange');
+    addMarker(hotel, "End: Holiday Inn Knoxville West", 'red');
 
-    const drive1 = await addDrivingRoute(eugene, pdx, 'knox1');
-    const flight1 = haversineDistance(pdx, dfw);
-    const flight2 = haversineDistance(dfw, tys);
-    const drive2 = await addDrivingRoute(tys, hotel, 'knox2');
+    const car1 = await addDrivingRoute(eugene, pdx, 'drive1');
+    const flight1 = addFlightArc(pdx, dfw, 'flight1');
+    const flight2 = addFlightArc(dfw, tys, 'flight2');
+    const car2 = await addDrivingRoute(tys, hotel, 'drive2');
 
-    updateSummary(drive1.distance + flight1 + flight2 + drive2.distance);
-    fitRoute([eugene, pdx, dfw, tys, hotel]);
+    fitRoute([...car1, ...flight1, ...flight2, ...car2]);
   }
 
   async function loadWilmingtonTrip() {
-    clearMap();
-    const eugene = [-123.0707, 44.0435];
-    const pdx = [-122.5951, 45.5887];
-    const den = [-104.6737, 39.8561];
-    const rdu = [-78.7875, 35.8801];
-    const hotel = [-77.8646, 34.2413];
+  clearMap();
 
-    addMarker(eugene, 'Start: McArthur Court', 'green');
-    addMarker(pdx, 'PDX Airport', 'orange');
-    addMarker(den, 'Denver International', 'orange');
-    addMarker(rdu, 'Raleigh-Durham Airport', 'orange');
-    addMarker(hotel, 'Tru by Hilton Wilmington', 'red');
+  const eugene = [-123.0707, 44.0435];
+  const pdx = [-122.5951, 45.5887];
+  const den = [-104.6737, 39.8561];
+  const rdu = [-78.7875, 35.8801];
+  const hotel = [-77.8646, 34.2413];
 
-    const drive1 = await addDrivingRoute(eugene, pdx, 'wilm1');
-    const flight1 = haversineDistance(pdx, den);
-    const flight2 = haversineDistance(den, rdu);
-    const drive2 = await addDrivingRoute(rdu, hotel, 'wilm2');
+  addMarker(eugene, "Start: McArthur Court", 'green');
+  addMarker(pdx, "Portland International Airport", 'orange');
+  addMarker(den, "Denver International Airport", 'orange');
+  addMarker(rdu, "Raleigh-Durham Airport", 'orange');
+  addMarker(hotel, "End: Tru by Hilton Wilmington", 'red');
 
-    updateSummary(drive1.distance + flight1 + flight2 + drive2.distance);
-    fitRoute([eugene, pdx, den, rdu, hotel]);
-  }
+  const car1 = await addDrivingRoute(eugene, pdx, 'wilm-drive1');
+  const flight1 = addFlightArc(pdx, den, 'wilm-flight1');
+  const flight2 = addFlightArc(den, rdu, 'wilm-flight2');
+  const car2 = await addDrivingRoute(rdu, hotel, 'wilm-drive2');
 
-  loadSanDiegoTrip();
+  fitRoute([...car1, ...flight1, ...flight2, ...car2]);
+}
+
+  map.on('load', loadSanDiegoTrip);
 </script>
 </body>
 </html>
