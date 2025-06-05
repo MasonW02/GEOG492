@@ -2,193 +2,55 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Ultimate Tournament Travel Map</title>
+  <title>Realistic Road Trip: Eugene to San Diego</title>
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js"></script>
+  <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.js"></script>
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css" rel="stylesheet" />
+  <link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.css" rel="stylesheet" />
   <style>
-    body { margin: 0; padding: 0; font-family: sans-serif; }
-    #map { position: absolute; top: 50px; bottom: 0; width: 100%; }
-    header {
-      position: absolute;
-      top: 0;
-      width: 100%;
-      height: 50px;
-      background: #222;
-      color: white;
-      display: flex;
-      align-items: center;
-      padding-left: 10px;
-      z-index: 1;
-    }
-    button {
-      margin: 0 10px;
-      padding: 6px 12px;
-      background: #444;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #666;
-    }
+    body { margin: 0; padding: 0; }
+    #map { position: absolute; top: 0; bottom: 0; width: 100%; }
   </style>
 </head>
 <body>
-
-<header>
-  <span>Select Tournament: </span>
-  <button onclick="loadSanDiego()">San Diego</button>
-  <button onclick="loadKnoxville()">Knoxville</button>
-</header>
-
 <div id="map"></div>
-
 <script>
-  mapboxgl.accessToken = 'pk.eyJ1IjoibWFzb253MDIiLCJhIjoiY205OTEzcXBpMDk0dTJpcHhseDl4dWNjOSJ9.tSqKSLEVU1A0vQ8kKHhxkw';
+  mapboxgl.accessToken = 'YOUR_MAPBOX_ACCESS_TOKEN'; // Replace with your token
 
   const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/streets-v11',
-    center: [-121, 39],
-    zoom: 4
+    center: [-121.0, 39.0],
+    zoom: 5
   });
 
-  let routeLayerId = null;
-  let markerList = [];
-
-  function clearMap() {
-    if (routeLayerId && map.getSource(routeLayerId)) {
-      map.removeLayer(routeLayerId);
-      map.removeSource(routeLayerId);
+  const directions = new MapboxDirections({
+    accessToken: mapboxgl.accessToken,
+    unit: 'imperial',
+    profile: 'mapbox/driving',
+    controls: {
+      inputs: false,
+      instructions: true
     }
-    markerList.forEach(m => m.remove());
-    markerList = [];
-  }
+  });
 
-  function addRouteAndMarkers(route, markers, id) {
-    routeLayerId = id;
-    map.addSource(id, {
-      type: 'geojson',
-      data: route
-    });
-    map.addLayer({
-      id: id,
-      type: 'line',
-      source: id,
-      layout: { 'line-cap': 'round', 'line-join': 'round' },
-      paint: {
-        'line-width': 4,
-        'line-color': ['match', ['get', 'type'], 'car', '#1f78b4', 'flight', '#e31a1c', '#888'],
-        'line-dasharray': ['match', ['get', 'type'], 'flight', ['literal', [2, 4]], 'car', ['literal', [1, 0]]]
-      }
-    });
+  map.addControl(directions, 'top-left');
 
-    markers.forEach(m => {
-      const marker = new mapboxgl.Marker({ color: m.color })
-        .setLngLat(m.coords)
-        .setPopup(new mapboxgl.Popup().setText(m.label))
-        .addTo(map);
-      markerList.push(marker);
-    });
+  // Set the route from McArthur Court to California Suites Hotel
+  directions.setOrigin([-123.0707, 44.0435]); // McArthur Court, Eugene
+  directions.setDestination([-117.1755, 32.8210]); // California Suites Hotel, San Diego
 
-    // Fit map to route
-    const bounds = new mapboxgl.LngLatBounds();
-    route.features.forEach(f => f.geometry.coordinates.forEach(coord => bounds.extend(coord)));
-    map.fitBounds(bounds, { padding: 80 });
-  }
+  // Optional: Add custom markers for start and end
+  const start = new mapboxgl.Marker({ color: 'green' })
+    .setLngLat([-123.0707, 44.0435])
+    .setPopup(new mapboxgl.Popup().setText("Start: McArthur Court"))
+    .addTo(map);
 
-  function loadSanDiego() {
-    clearMap();
-    const route = {
-      "type": "FeatureCollection",
-      "features": [
-        {
-          "type": "Feature",
-          "properties": { "type": "car" },
-          "geometry": {
-            "type": "LineString",
-            "coordinates": [
-              [-123.0707, 44.0435], // Eugene
-              [-117.1755, 32.8210]  // San Diego
-            ]
-          }
-        }
-      ]
-    };
-    const markers = [
-      { coords: [-123.0707, 44.0435], label: "McArthur Court, Eugene", color: 'green' },
-      { coords: [-117.1755, 32.8210], label: "California Suites Hotel, San Diego", color: 'red' }
-    ];
-    addRouteAndMarkers(route, markers, 'sanDiegoRoute');
-  }
-
-  function loadKnoxville() {
-    clearMap();
-    const route = {
-      "type": "FeatureCollection",
-      "features": [
-        {
-          "type": "Feature",
-          "properties": { "type": "car" },
-          "geometry": {
-            "type": "LineString",
-            "coordinates": [
-              [-123.0707, 44.0435], // Eugene
-              [-122.5975, 45.5898]  // PDX
-            ]
-          }
-        },
-        {
-          "type": "Feature",
-          "properties": { "type": "flight" },
-          "geometry": {
-            "type": "LineString",
-            "coordinates": [
-              [-122.5975, 45.5898], // PDX
-              [-97.0403, 32.8998]   // DFW
-            ]
-          }
-        },
-        {
-          "type": "Feature",
-          "properties": { "type": "flight" },
-          "geometry": {
-            "type": "LineString",
-            "coordinates": [
-              [-97.0403, 32.8998],  // DFW
-              [-83.9940, 35.8110]   // TYS
-            ]
-          }
-        },
-        {
-          "type": "Feature",
-          "properties": { "type": "car" },
-          "geometry": {
-            "type": "LineString",
-            "coordinates": [
-              [-83.9940, 35.8110],  // TYS
-              [-84.0626, 35.9190]   // Holiday Inn Knoxville West
-            ]
-          }
-        }
-      ]
-    };
-
-    const markers = [
-      { coords: [-123.0707, 44.0435], label: "McArthur Court, Eugene", color: 'green' },
-      { coords: [-122.5975, 45.5898], label: "PDX Airport", color: '#999' },
-      { coords: [-97.0403, 32.8998], label: "Dallas/Fort Worth Airport (DFW)", color: '#999' },
-      { coords: [-83.9940, 35.8110], label: "McGhee Tyson Airport (TYS)", color: '#999' },
-      { coords: [-84.0626, 35.9190], label: "Holiday Inn Knoxville West", color: 'red' }
-    ];
-
-    addRouteAndMarkers(route, markers, 'knoxvilleRoute');
-  }
-
-  // Load San Diego map by default
-  map.on('load', loadSanDiego);
+  const end = new mapboxgl.Marker({ color: 'red' })
+    .setLngLat([-117.1755, 32.8210])
+    .setPopup(new mapboxgl.Popup().setText("End: California Suites Hotel"))
+    .addTo(map);
 </script>
-
 </body>
 </html>
