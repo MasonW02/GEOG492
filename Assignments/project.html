@@ -2,12 +2,10 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Realistic Road Trip: Eugene to San Diego</title>
+  <title>Route to San Diego - Mapbox GL JS v3 Compatible</title>
   <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js"></script>
-  <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.js"></script>
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css" rel="stylesheet" />
-  <link href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.1/mapbox-gl-directions.css" rel="stylesheet" />
   <style>
     body { margin: 0; padding: 0; }
     #map { position: absolute; top: 0; bottom: 0; width: 100%; }
@@ -16,7 +14,7 @@
 <body>
 <div id="map"></div>
 <script>
-  mapboxgl.accessToken = 'pk.eyJ1IjoibWFzb253MDIiLCJhIjoiY205OTEzcXBpMDk0dTJpcHhseDl4dWNjOSJ9.tSqKSLEVU1A0vQ8kKHhxkw'; // Replace with your token
+  mapboxgl.accessToken = 'pk.eyJ1IjoibWFzb253MDIiLCJhIjoiY205OTEzcXBpMDk0dTJpcHhseDl4dWNjOSJ9.tSqKSLEVU1A0vQ8kKHhxkw';
 
   const map = new mapboxgl.Map({
     container: 'map',
@@ -25,32 +23,63 @@
     zoom: 5
   });
 
-  const directions = new MapboxDirections({
-    accessToken: mapboxgl.accessToken,
-    unit: 'imperial',
-    profile: 'mapbox/driving',
-    controls: {
-      inputs: false,
-      instructions: true
-    }
-  });
+  const origin = [-123.0707, 44.0435]; // McArthur Court, Eugene
+  const destination = [-117.1755, 32.8210]; // California Suites Hotel, San Diego
 
-  map.addControl(directions, 'top-left');
-
-  // Set the route from McArthur Court to California Suites Hotel
-  directions.setOrigin([-123.0707, 44.0435]); // McArthur Court, Eugene
-  directions.setDestination([-117.1755, 32.8210]); // California Suites Hotel, San Diego
-
-  // Optional: Add custom markers for start and end
-  const start = new mapboxgl.Marker({ color: 'green' })
-    .setLngLat([-123.0707, 44.0435])
+  // Add static markers
+  new mapboxgl.Marker({ color: 'green' })
+    .setLngLat(origin)
     .setPopup(new mapboxgl.Popup().setText("Start: McArthur Court"))
     .addTo(map);
 
-  const end = new mapboxgl.Marker({ color: 'red' })
-    .setLngLat([-117.1755, 32.8210])
+  new mapboxgl.Marker({ color: 'red' })
+    .setLngLat(destination)
     .setPopup(new mapboxgl.Popup().setText("End: California Suites Hotel"))
     .addTo(map);
+
+  async function getRoute() {
+    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${origin[0]},${origin[1]};${destination[0]},${destination[1]}?geometries=geojson&overview=full&access_token=${mapboxgl.accessToken}`;
+
+    const response = await fetch(url);
+    const json = await response.json();
+    const data = json.routes[0];
+
+    if (!data || !data.geometry) {
+      console.error("No route found.");
+      return;
+    }
+
+    const route = data.geometry;
+
+    map.addSource('route', {
+      type: 'geojson',
+      data: {
+        type: 'Feature',
+        geometry: route
+      }
+    });
+
+    map.addLayer({
+      id: 'route',
+      type: 'line',
+      source: 'route',
+      layout: {
+        'line-join': 'round',
+        'line-cap': 'round'
+      },
+      paint: {
+        'line-color': '#0074D9',
+        'line-width': 4
+      }
+    });
+
+    // Fit the map to the route
+    const bounds = new mapboxgl.LngLatBounds();
+    route.coordinates.forEach(coord => bounds.extend(coord));
+    map.fitBounds(bounds, { padding: 50 });
+  }
+
+  map.on('load', getRoute);
 </script>
 </body>
 </html>
