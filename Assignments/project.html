@@ -49,20 +49,27 @@
   });
 
   let routeIds = [];
+  let markers = [];
+
   function clearMap() {
     routeIds.forEach(id => {
       if (map.getLayer(id)) map.removeLayer(id);
       if (map.getSource(id)) map.removeSource(id);
     });
     routeIds = [];
+
+    markers.forEach(marker => marker.remove());
+    markers = [];
+
     document.getElementById('summary').innerText = 'Total Distance: ';
   }
 
   function addMarker(coord, text, color) {
-    new mapboxgl.Marker({ color })
+    const marker = new mapboxgl.Marker({ color })
       .setLngLat(coord)
       .setPopup(new mapboxgl.Popup().setText(text))
       .addTo(map);
+    markers.push(marker);
   }
 
   function updateSummary(meters) {
