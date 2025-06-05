@@ -58,57 +58,44 @@
   let markerList = [];
 
   function clearMap() {
-    if (routeLayerId) {
-      if (map.getLayer(routeLayerId)) {
-        map.removeLayer(routeLayerId);
-      }
-      if (map.getSource(routeLayerId)) {
-        map.removeSource(routeLayerId);
-      }
-      routeLayerId = null;
+    if (routeLayerId && map.getSource(routeLayerId)) {
+      map.removeLayer(routeLayerId);
+      map.removeSource(routeLayerId);
     }
     markerList.forEach(m => m.remove());
     markerList = [];
   }
 
   function addRouteAndMarkers(route, markers, id) {
-    function add() {
-      routeLayerId = id;
-      map.addSource(id, {
-        type: 'geojson',
-        data: route
-      });
-      map.addLayer({
-        id: id,
-        type: 'line',
-        source: id,
-        layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: {
-          'line-width': 4,
-          'line-color': ['match', ['get', 'type'], 'car', '#1f78b4', 'flight', '#e31a1c', '#888'],
-          'line-dasharray': ['match', ['get', 'type'], 'flight', ['literal', [2, 4]], 'car', ['literal', [1, 0]]]
-        }
-      });
+    routeLayerId = id;
+    map.addSource(id, {
+      type: 'geojson',
+      data: route
+    });
+    map.addLayer({
+      id: id,
+      type: 'line',
+      source: id,
+      layout: { 'line-cap': 'round', 'line-join': 'round' },
+      paint: {
+        'line-width': 4,
+        'line-color': ['match', ['get', 'type'], 'car', '#1f78b4', 'flight', '#e31a1c', '#888'],
+        'line-dasharray': ['match', ['get', 'type'], 'flight', ['literal', [2, 4]], 'car', ['literal', [1, 0]]]
+      }
+    });
 
-      markers.forEach(m => {
-        const marker = new mapboxgl.Marker({ color: m.color })
-          .setLngLat(m.coords)
-          .setPopup(new mapboxgl.Popup().setText(m.label))
-          .addTo(map);
-        markerList.push(marker);
-      });
+    markers.forEach(m => {
+      const marker = new mapboxgl.Marker({ color: m.color })
+        .setLngLat(m.coords)
+        .setPopup(new mapboxgl.Popup().setText(m.label))
+        .addTo(map);
+      markerList.push(marker);
+    });
 
-      const bounds = new mapboxgl.LngLatBounds();
-      route.features.forEach(f => f.geometry.coordinates.forEach(coord => bounds.extend(coord)));
-      map.fitBounds(bounds, { padding: 80 });
-    }
-
-    // Make sure map style is fully loaded before adding
-    if (map.isStyleLoaded()) {
-      add();
-    } else {
-      map.once('styledata', add);
-    }
+    // Fit map to route
+    const bounds = new mapboxgl.LngLatBounds();
+    route.features.forEach(f => f.geometry.coordinates.forEach(coord => bounds.extend(coord)));
+    map.fitBounds(bounds, { padding: 80 });
   }
 
   function loadSanDiego() {
@@ -122,8 +109,8 @@
           "geometry": {
             "type": "LineString",
             "coordinates": [
-              [-123.0707, 44.0435],
-              [-117.1755, 32.8210]
+              [-123.0707, 44.0435], // Eugene
+              [-117.1755, 32.8210]  // San Diego
             ]
           }
         }
@@ -147,8 +134,8 @@
           "geometry": {
             "type": "LineString",
             "coordinates": [
-              [-123.0707, 44.0435],
-              [-122.5975, 45.5898]
+              [-123.0707, 44.0435], // Eugene
+              [-122.5975, 45.5898]  // PDX
             ]
           }
         },
@@ -158,8 +145,8 @@
           "geometry": {
             "type": "LineString",
             "coordinates": [
-              [-122.5975, 45.5898],
-              [-97.0403, 32.8998]
+              [-122.5975, 45.5898], // PDX
+              [-97.0403, 32.8998]   // DFW
             ]
           }
         },
@@ -169,8 +156,8 @@
           "geometry": {
             "type": "LineString",
             "coordinates": [
-              [-97.0403, 32.8998],
-              [-83.9940, 35.8110]
+              [-97.0403, 32.8998],  // DFW
+              [-83.9940, 35.8110]   // TYS
             ]
           }
         },
@@ -180,8 +167,8 @@
           "geometry": {
             "type": "LineString",
             "coordinates": [
-              [-83.9940, 35.8110],
-              [-84.0626, 35.9190]
+              [-83.9940, 35.8110],  // TYS
+              [-84.0626, 35.9190]   // Holiday Inn Knoxville West
             ]
           }
         }
@@ -199,6 +186,7 @@
     addRouteAndMarkers(route, markers, 'knoxvilleRoute');
   }
 
+  // Load San Diego map by default
   map.on('load', loadSanDiego);
 </script>
 
