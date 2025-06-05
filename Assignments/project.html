@@ -35,8 +35,9 @@
 </head>
 <body>
 <div id="buttons">
-  <button onclick="loadSanDiegoTrip()">San Diego</button>
-  <button onclick="loadKnoxvilleTrip()">Knoxville</button>
+  <button onclick="loadSanDiegoTrip()">President's Day Invitational</button>
+  <button onclick="loadKnoxvilleTrip()">Smoky Mountain Invitational</button>
+  <button onclick="loadWilmingtonTrip()">Easterns</button>
 </div>
 <div id="map"></div>
 
@@ -183,6 +184,29 @@
 
     fitRoute([...car1, ...flight1, ...flight2, ...car2]);
   }
+
+  async function loadWilmingtonTrip() {
+  clearMap();
+
+  const eugene = [-123.0707, 44.0435];
+  const pdx = [-122.5951, 45.5887];
+  const den = [-104.6737, 39.8561];
+  const rdu = [-78.7875, 35.8801];
+  const hotel = [-77.8646, 34.2413];
+
+  addMarker(eugene, "Start: McArthur Court", 'green');
+  addMarker(pdx, "Portland International Airport", 'orange');
+  addMarker(den, "Denver International Airport", 'orange');
+  addMarker(rdu, "Raleigh-Durham Airport", 'orange');
+  addMarker(hotel, "End: Tru by Hilton Wilmington", 'red');
+
+  const car1 = await addDrivingRoute(eugene, pdx, 'wilm-drive1');
+  const flight1 = addFlightArc(pdx, den, 'wilm-flight1');
+  const flight2 = addFlightArc(den, rdu, 'wilm-flight2');
+  const car2 = await addDrivingRoute(rdu, hotel, 'wilm-drive2');
+
+  fitRoute([...car1, ...flight1, ...flight2, ...car2]);
+}
 
   map.on('load', loadSanDiegoTrip);
 </script>
