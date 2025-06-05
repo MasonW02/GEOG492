@@ -47,7 +47,7 @@
 <body>
 <div id="buttons">
   <button onclick="loadSanDiegoTrip()">President's Day Invitational</button>
-  <button onclick="loadKnoxvilleTrip()">Smoky Mountain Inivitational</button>
+  <button onclick="loadKnoxvilleTrip()">Smoky Mountain Invitational</button>
   <button onclick="loadWilmingtonTrip()">Easterns</button>
 </div>
 <div id="map"></div>
@@ -188,7 +188,7 @@
 
   function showSummary() {
     const el = document.getElementById('summary');
-    el.innerHTML = `Total Driving: ${totalDrivingMiles.toFixed(1)} mi<br>Total Flying: ${totalFlightMiles.toFixed(1)} mi`;
+    el.innerHTML = `Total Driving Distance: ${totalDrivingMiles.toFixed(1)} mi<br>Total Flying Distance: ${totalFlightMiles.toFixed(1)} mi`;
     el.style.display = 'block';
   }
 
