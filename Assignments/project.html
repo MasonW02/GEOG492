@@ -9,28 +9,43 @@
   <style>
     body { margin: 0; padding: 0; font-family: sans-serif; }
     #map { position: absolute; top: 40px; bottom: 0; width: 100%; }
-    #buttons {
-      position: absolute;
-      top: 0; left: 0;
-      background: #fff;
-      padding: 5px 10px;
-      z-index: 1;
-      display: flex;
-      gap: 10px;
-      box-shadow: 0 1px 5px rgba(0,0,0,0.3);
-    }
-    button {
-      cursor: pointer;
-      padding: 6px 12px;
-      font-size: 14px;
-      border: none;
-      background: #0074D9;
-      color: white;
-      border-radius: 4px;
-    }
-    button:hover {
-      background: #005fa3;
-    }
+    #buttons-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  background: #fff;
+  padding: 5px 10px;
+  z-index: 1;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.3);
+  gap: 10px;
+}
+
+#buttons {
+  display: flex;
+  gap: 10px;
+}
+
+#blurb {
+  font-size: 14px;
+  color: #0c6d10;
+  white-space: nowrap;
+}
+
+button {
+  cursor: pointer;
+  padding: 6px 12px;
+  font-size: 14px;
+  border: none;
+  background: #0e8e13;
+  color: white;
+  border-radius: 4px;
+}
+
+button:hover {
+  background: #0c6d10;
+}
     .popup-summary {
       position: absolute;
       top: 50px;
@@ -45,11 +60,16 @@
   </style>
 </head>
 <body>
-<div id="buttons">
-  <button onclick="loadSanDiegoTrip()">President's Day Invitational</button>
-  <button onclick="loadKnoxvilleTrip()">Smoky Mountain Invitational</button>
-  <button onclick="loadWilmingtonTrip()">Easterns</button>
+  
+<div id="buttons-container">
+  <div id="blurb">Oregon Ego Ultimate Frisbee 2025 Regular Season Travel Tournaments:</div>
+  <div id="buttons">
+    <button onclick="loadSanDiegoTrip()">President's Day Invitational</button>
+    <button onclick="loadKnoxvilleTrip()">Smoky Mountain Invitational</button>
+    <button onclick="loadWilmingtonTrip()">Easterns</button>
+  </div>
 </div>
+
 <div id="map"></div>
 <div id="summary" class="popup-summary" style="display: none;"></div>
 
