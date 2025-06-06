@@ -46,16 +46,30 @@ button {
 button:hover {
   background: #0c6d10;
 }
-    .popup-summary {
-      position: absolute;
-      top: 50px;
-      right: 20px;
-      background: rgba(255,255,255,0.9);
-      padding: 10px;
-      border-radius: 6px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.2);
-      z-index: 2;
-      font-size: 14px;
+    
+.popup-summary {
+  position: absolute;
+  top: 50px;
+  right: 20px;
+  background: rgba(255,255,255,0.9);
+  padding: 10px;
+  border-radius: 6px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.2);
+  z-index: 2;
+  font-size: 14px;
+}
+
+ .descriptionPanel {
+    position: absolute;
+    bottom: 65px;
+    left: 20px;
+    z-index: 2;
+    width: 300px;
+    height: 40px;
+    background: rgba(80, 80, 80, .75);
+    transition: width 2s, height 2s;
+    overflow: hidden;
+    border-radius: 7px;
     }
   </style>
 </head>
@@ -72,6 +86,16 @@ button:hover {
 
 <div id="map"></div>
 <div id="summary" class="popup-summary" style="display: none;"></div>
+<!-- map description panel -->
+<div class="descriptionPanel" id="descriptionPanel" style="height: 250px;">
+ <span onclick="panelSelect()" id="glyph" class="chevron glyphicon glyphicon-chevron-down"></span>
+ <hr>
+ <h2>Tournament Summary</h2>
+ <p style="margin-left: 10px; margin-right: 10px;">
+   Temporary Filler Text
+ </p>
+</div>
+
 
 <script>
   mapboxgl.accessToken = 'pk.eyJ1IjoibWFzb253MDIiLCJhIjoiY205OTEzcXBpMDk0dTJpcHhseDl4dWNjOSJ9.tSqKSLEVU1A0vQ8kKHhxkw';
@@ -269,7 +293,24 @@ button:hover {
     fitRoute([...car1, ...flight1, ...flight2, ...car2]);
     showSummary();
   }
+
+    //legend interaction
+    var state = { panelOpen: true };
+
+    function panelSelect(){
+      if(state.panelOpen){
+        document.getElementById('descriptionPanel').style.height = '26px';
+        document.getElementById('glyph').className = "chevron glyphicon glyphicon-chevron-up";
+        state.panelOpen = false;
+      } else {
+        document.getElementById('descriptionPanel').style.height = '250px';
+        document.getElementById('glyph').className = "chevron glyphicon glyphicon-chevron-down";
+        state.panelOpen = true;
+      }
+    }
+
   map.on('load', loadSanDiegoTrip);
+  
 </script>
 </body>
 </html>
