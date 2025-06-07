@@ -65,7 +65,7 @@ button:hover {
     left: 20px;
     z-index: 2;
     width: 400px;
-    height: 80px;
+    height: 65px;
     background: rgba(80, 80, 80, .75);
     transition: width 2s, height 2s;
     overflow: hidden;
@@ -83,7 +83,7 @@ button:hover {
      color: white;
    }
 
-  h3 {
+  h4 {
    color: white;
  }
     
@@ -107,7 +107,7 @@ button:hover {
 <div id="panelToggle" onclick="toggleDescriptionPanel()" style="text-align: center; cursor: pointer; color: white;">
   ▼
 </div>
- <h3>Tournament Summary</h3>
+ <h4 style="margin-left: 10px;">Tournament Summary</h4>
  <p id="descriptionText" style="margin-left: 10px; margin-right: 10px;">
    Temporary Filler Text
  </p>
@@ -253,8 +253,8 @@ button:hover {
     el.style.display = 'block';
   }
 
-function updateDescription(text) {
-  document.getElementById('descriptionText').textContent = text;
+function updateDescription(html) {
+  document.getElementById('descriptionPanel').querySelector('p').innerHTML = html;
 }
 
 let panelOpen = true;
@@ -265,7 +265,7 @@ function toggleDescriptionPanel() {
   const descriptionText = panel.querySelector('p');
 
   if (panelOpen) {
-    panel.style.height = '80px';  // enough for heading and arrow
+    panel.style.height = '65px';  // enough for heading and arrow
     toggle.textContent = '▲';
     descriptionText.style.display = 'none';
   } else {
@@ -287,9 +287,7 @@ function toggleDescriptionPanel() {
     const coords = await addDrivingRoute(start, end, 'sd-route');
     fitRoute(coords);
     showSummary();
-    updateDescription(
-      'Presidents Day Invitational in San Diego, CA. This mid-Febuary tournament kicks off the season and regularly features the top west coast programs. Oregon Ego got off to a hot start to their season at this tournament, winning all their games to go 8-0 on the weekend, including key victories over rivals Colarado and Oregon State in the semifinals and finals, respectively. View the full tournament results <a href="https://play.usaultimate.org/events/Presidents-Day-Invite-2025/schedule/Men/CollegeMen/" target="_blank" style="color: #aad8ff; text-decoration: underline;">here</a>'
-    );
+    updateDescription('<p>Presidents Day Invitational in San Diego, CA. This mid-Febuary tournament kicks off the season and regularly features the top west coast programs. Oregon Ego got off to a hot start to their season at this tournament, winning all their games to go 8-0 on the weekend, including key victories over rivals Colarado and Oregon State in the semifinals and finals, respectively. View the full tournament results <a href="https://play.usaultimate.org/events/Presidents-Day-Invite-2025/schedule/Men/CollegeMen/" target="_blank" style="color: #aad8ff; text-decoration: underline;">here</a></p>');
     if (!panelOpen) toggleDescriptionPanel();
     if (!state.panelOpen) panelSelect();
   }
