@@ -100,7 +100,7 @@ button:hover {
  <span onclick="panelSelect()" id="glyph" class="chevron glyphicon glyphicon-chevron-down"></span>
  <hr>
  <h2>Tournament Summary</h2>
- <p style="margin-left: 10px; margin-right: 10px;">
+ <p id="descriptionText" style="margin-left: 10px; margin-right: 10px;">
    Temporary Filler Text
  </p>
 </div>
@@ -245,6 +245,10 @@ button:hover {
     el.style.display = 'block';
   }
 
+function updateDescription(text) {
+  document.getElementById('descriptionText').textContent = text;
+}
+
   async function loadSanDiegoTrip() {
     clearMap();
     const start = [-123.0707, 44.0435];
@@ -255,6 +259,10 @@ button:hover {
     const coords = await addDrivingRoute(start, end, 'sd-route');
     fitRoute(coords);
     showSummary();
+    updateDescription(
+      "President's Day Invitational in San Diego, CA. This mid-Febuary tournament kicks off the season and regularly features the top west coast programs."
+    );
+    if (!state.panelOpen) panelSelect();
   }
 
   async function loadKnoxvilleTrip() {
@@ -278,6 +286,8 @@ button:hover {
 
     fitRoute([...car1, ...flight1, ...flight2, ...car2]);
     showSummary();
+    updateDescription("Smoky Mountain Invitational in Knoxville, TN. A key mid-season tournament bringing together elite teams from the Southeast and beyond.");
+    if (!state.panelOpen) panelSelect();
   }
 
   async function loadWilmingtonTrip() {
@@ -301,6 +311,8 @@ button:hover {
 
     fitRoute([...car1, ...flight1, ...flight2, ...car2]);
     showSummary();
+    updateDescription("Easterns in Wilmington, NC. This end-of-season event features the strongest teams nationwide and serves as a key test before Nationals.");
+    if (!state.panelOpen) panelSelect();
   }
 
     //legend interaction
