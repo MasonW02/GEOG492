@@ -65,11 +65,13 @@ button:hover {
     left: 20px;
     z-index: 2;
     width: 300px;
-    height: 40px;
+    height: 80px;
     background: rgba(80, 80, 80, .75);
     transition: width 2s, height 2s;
     overflow: hidden;
     border-radius: 7px;
+    display: flex;
+    flex-direction: column;
     }
 
    .layerDescription {
@@ -80,6 +82,11 @@ button:hover {
   p {
      color: white;
    }
+
+  h2 {
+   color: white;
+ }
+    
   </style>
 </head>
 <body>
@@ -97,9 +104,11 @@ button:hover {
 <div id="summary" class="popup-summary" style="display: none;"></div>
 <!-- map description panel -->
 <div class="descriptionPanel" id="descriptionPanel" style="height: 250px;">
- <span onclick="panelSelect()" id="glyph" class="chevron glyphicon glyphicon-chevron-down"></span>
- <hr>
+<div id="panelToggle" onclick="toggleDescriptionPanel()" style="cursor: pointer; color: white; padding: 5px 10px;">
+  ▼
+</div>
  <h2>Tournament Summary</h2>
+ <hr>
  <p id="descriptionText" style="margin-left: 10px; margin-right: 10px;">
    Temporary Filler Text
  </p>
@@ -249,6 +258,23 @@ function updateDescription(text) {
   document.getElementById('descriptionText').textContent = text;
 }
 
+let panelOpen = true;
+
+function toggleDescriptionPanel() {
+  const panel = document.getElementById('descriptionPanel');
+  const toggle = document.getElementById('panelToggle');
+
+  if (panelOpen) {
+    panel.style.height = '26px';
+    toggle.textContent = '▲';
+  } else {
+    panel.style.height = '250px';
+    toggle.textContent = '▼';
+  }
+
+  panelOpen = !panelOpen;
+}
+
   async function loadSanDiegoTrip() {
     clearMap();
     const start = [-123.0707, 44.0435];
@@ -262,6 +288,7 @@ function updateDescription(text) {
     updateDescription(
       "President's Day Invitational in San Diego, CA. This mid-Febuary tournament kicks off the season and regularly features the top west coast programs."
     );
+    if (!panelOpen) toggleDescriptionPanel();
     if (!state.panelOpen) panelSelect();
   }
 
@@ -287,6 +314,7 @@ function updateDescription(text) {
     fitRoute([...car1, ...flight1, ...flight2, ...car2]);
     showSummary();
     updateDescription("Smoky Mountain Invitational in Knoxville, TN. A key mid-season tournament bringing together elite teams from the Southeast and beyond.");
+    if (!panelOpen) toggleDescriptionPanel();
     if (!state.panelOpen) panelSelect();
   }
 
@@ -312,23 +340,9 @@ function updateDescription(text) {
     fitRoute([...car1, ...flight1, ...flight2, ...car2]);
     showSummary();
     updateDescription("Easterns in Wilmington, NC. This end-of-season event features the strongest teams nationwide and serves as a key test before Nationals.");
+    if (!panelOpen) toggleDescriptionPanel();
     if (!state.panelOpen) panelSelect();
   }
-
-    //legend interaction
-    var state = { panelOpen: true };
-
-    function panelSelect(){
-      if(state.panelOpen){
-        document.getElementById('descriptionPanel').style.height = '26px';
-        document.getElementById('glyph').className = "chevron glyphicon glyphicon-chevron-up";
-        state.panelOpen = false;
-      } else {
-        document.getElementById('descriptionPanel').style.height = '250px';
-        document.getElementById('glyph').className = "chevron glyphicon glyphicon-chevron-down";
-        state.panelOpen = true;
-      }
-    }
 
   map.on('load', loadSanDiegoTrip);
   
