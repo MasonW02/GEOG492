@@ -104,11 +104,10 @@ button:hover {
 <div id="summary" class="popup-summary" style="display: none;"></div>
 <!-- map description panel -->
 <div class="descriptionPanel" id="descriptionPanel" style="height: 250px;">
-<div id="panelToggle" onclick="toggleDescriptionPanel()" style="text-align: center; cursor: pointer; color: white; padding: 5px 10px;">
+<div id="panelToggle" onclick="toggleDescriptionPanel()" style="text-align: center; cursor: pointer; color: white;">
   ▼
 </div>
  <h3>Tournament Summary</h3>
- <hr>
  <p id="descriptionText" style="margin-left: 10px; margin-right: 10px;">
    Temporary Filler Text
  </p>
@@ -266,11 +265,11 @@ function toggleDescriptionPanel() {
   const descriptionText = panel.querySelector('p');
 
   if (panelOpen) {
-    panel.style.height = '60px';  // enough for heading and arrow
+    panel.style.height = '80px';  // enough for heading and arrow
     toggle.textContent = '▲';
     descriptionText.style.display = 'none';
   } else {
-    panel.style.height = '250px';
+    panel.style.height = '300px';
     toggle.textContent = '▼';
     descriptionText.style.display = 'block';
   }
