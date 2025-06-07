@@ -64,7 +64,7 @@ button:hover {
     bottom: 65px;
     left: 20px;
     z-index: 2;
-    width: 300px;
+    width: 400px;
     height: 80px;
     background: rgba(80, 80, 80, .75);
     transition: width 2s, height 2s;
@@ -83,7 +83,7 @@ button:hover {
      color: white;
    }
 
-  h2 {
+  h3 {
    color: white;
  }
     
@@ -104,10 +104,10 @@ button:hover {
 <div id="summary" class="popup-summary" style="display: none;"></div>
 <!-- map description panel -->
 <div class="descriptionPanel" id="descriptionPanel" style="height: 250px;">
-<div id="panelToggle" onclick="toggleDescriptionPanel()" style="cursor: pointer; color: white; padding: 5px 10px;">
+<div id="panelToggle" onclick="toggleDescriptionPanel()" style="text-align: center; cursor: pointer; color: white; padding: 5px 10px;">
   ▼
 </div>
- <h2>Tournament Summary</h2>
+ <h3>Tournament Summary</h3>
  <hr>
  <p id="descriptionText" style="margin-left: 10px; margin-right: 10px;">
    Temporary Filler Text
@@ -263,13 +263,16 @@ let panelOpen = true;
 function toggleDescriptionPanel() {
   const panel = document.getElementById('descriptionPanel');
   const toggle = document.getElementById('panelToggle');
+  const descriptionText = panel.querySelector('p');
 
   if (panelOpen) {
-    panel.style.height = '26px';
+    panel.style.height = '60px';  // enough for heading and arrow
     toggle.textContent = '▲';
+    descriptionText.style.display = 'none';
   } else {
     panel.style.height = '250px';
     toggle.textContent = '▼';
+    descriptionText.style.display = 'block';
   }
 
   panelOpen = !panelOpen;
@@ -286,7 +289,7 @@ function toggleDescriptionPanel() {
     fitRoute(coords);
     showSummary();
     updateDescription(
-      "President's Day Invitational in San Diego, CA. This mid-Febuary tournament kicks off the season and regularly features the top west coast programs."
+      'Presidents Day Invitational in San Diego, CA. This mid-Febuary tournament kicks off the season and regularly features the top west coast programs. Oregon Ego got off to a hot start to their season at this tournament, winning all their games to go 8-0 on the weekend, including key victories over rivals Colarado and Oregon State in the semifinals and finals, respectively. View the full tournament results <a href="https://play.usaultimate.org/events/Presidents-Day-Invite-2025/schedule/Men/CollegeMen/" target="_blank" style="color: #aad8ff; text-decoration: underline;">here</a>'
     );
     if (!panelOpen) toggleDescriptionPanel();
     if (!state.panelOpen) panelSelect();
