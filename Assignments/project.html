@@ -123,13 +123,13 @@
 
   const map = new mapboxgl.Map({
     container: 'map',
-    style: 'mapbox://styles/mapbox/navigation-night-v1',
+    style: 'mapbox://styles/mapbox/streets-v12',
     center: [-98.5795, 39.8283],  //apprx center of contiguous US
     zoom: 5,
     minZoom: 3,   //min zoom level that restricts to contiguous US
     maxBounds: [  //max bounds restricted to contiguous US
-      [-130, 22],  
-      [-65, 52]    
+      [-135, 18],  //SW bound
+      [-65, 52]    //NE bound
     ]
   });
   map.dragRotate.disable(); //disable the drag to rotate functionality
