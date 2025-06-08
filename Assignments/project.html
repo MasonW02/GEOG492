@@ -123,7 +123,7 @@
 
   const map = new mapboxgl.Map({
     container: 'map',
-    style: 'mapbox://styles/mapbox/streets-v12',
+    style: 'mapbox://styles/mapbox/streets-v11',
     center: [-98.5795, 39.8283],  //apprx center of contiguous US
     zoom: 5,
     minZoom: 3,   //min zoom level that restricts to contiguous US
@@ -289,27 +289,27 @@ function updateDescription(html) {
   document.getElementById('descriptionPanel').querySelector('p').innerHTML = html;
 }
 
-let panelOpen = true; //on load, the description panel will be open
+let panelClosed = true; //on load, the description panel will be closed
 function toggleDescriptionPanel() {
   //provides the functionality for expanding and collapsing the tournament description panel
   const panel = document.getElementById('descriptionPanel');
   const toggle = document.getElementById('panelToggle');
   const descriptionText = panel.querySelector('p');
 
-  //if panel is open on click, then reduce the height and flip arrow up
-  if (panelOpen) {
-    panel.style.height = '65px';  
-    toggle.textContent = '▲';
-    descriptionText.style.display = 'none';
-  } 
-  //if panel is closed on click, then increase height and flip arrow down
-  else {
+  //if panel is closed on click, then increase the height and flip arrow down
+  if (panelClosed) {
     panel.style.height = '500px';
     toggle.textContent = '▼';
     descriptionText.style.display = 'block';
+  } 
+  //if panel is open on click, then decrease the height and flip arrow up
+  else {
+    panel.style.height = '65px';  
+    toggle.textContent = '▲';
+    descriptionText.style.display = 'none';
   }
 
-  panelOpen = !panelOpen; //panelOpen state updated (if True, becomes False, and vice verse)
+  panelClosed = !panelClosed; //panelClosed state updated (if true, becomes false, and vice verse)
 }
 
   async function loadPresDay() {
@@ -325,8 +325,8 @@ function toggleDescriptionPanel() {
     showSummary();     //call showSummary() to update the distance travelled popup with latest values of distance travelled variables
     //call updateDescription() to update the collapsable tournament description panel, the input of this call makes up the entirety of the content of the panel
     updateDescription('<p>Presidents Day Invitational in San Diego, CA. This mid-Febuary tournament kicks off the season and regularly features the top west coast programs. Oregon Ego got off to a hot start to their season at this tournament, winning all their games to go 8-0 on the weekend, including key victories over rivals Colarado and Oregon State in the semifinals and finals, respectively. View the full tournament results <a href="https://play.usaultimate.org/events/Presidents-Day-Invite-2025/schedule/Men/CollegeMen/" target="_blank" style="color: #aad8ff; text-decoration: underline;">here</a><figure><img src="https://cdn.ultiworld.com/wordpress/wp-content/uploads/2025/02/pdi_wcb_65282_20250217_134257-ZF-7571-76694-1-001.jpg" alt="prez_day_img" width="400" height="270"><figcaption>Ego Captain Mica Class is guarded by OSU captain Ben Thoennes during the final. Photo: William ‘Brody’ Brotman – Ultiphotos.com</figcaption></figure></p>');
-    if (!panelOpen) toggleDescriptionPanel();  //description panel starts open
-    if (!state.panelOpen) panelSelect();
+    if (!panelClosed) toggleDescriptionPanel();  //description panel starts closed
+    if (!state.panelClosed) panelSelect();
   }
   
   async function loadSMI() {
@@ -353,8 +353,8 @@ function toggleDescriptionPanel() {
     showSummary();  //update distance travelled summary
     //update collapsable tournament description panel
     updateDescription('<p>Smoky Mountain Invitational in Knoxville, TN. A key mid-season tournament, it featured many of the top teams in the country this year and would present some adveristy for Ego, as they would drop games to 7th seed North Carolina in pool play and 1st seed Carleton in quarterfinals. Not to leave empty-handed, they would rebound to beat rivals Oregon State in the final game to secure fifth place and go 5-2 on the weekend. View the full tournament results <a href="https://play.usaultimate.org/events/Smoky-Mountain-Invite-2025/schedule/Men/CollegeMen/" target="_blank" style="color: #aad8ff; text-decoration: underline;">here</a><figure><img src="https://github.com/MasonW02/GEOG492/blob/main/Assignments/project_images/badarcus.png?raw=true" alt="smi_img" width="400" height="250"><figcaption>Marcus Beidler lays out for the disc at SMI. Photo: William ‘Brody’ Brotman – Ultiphotos.com</figcaption></figure></p>');
-    if (!panelOpen) toggleDescriptionPanel();  //panel starts open
-    if (!state.panelOpen) panelSelect();
+    if (!panelClosed) toggleDescriptionPanel();  //panel starts open
+    if (!state.panelClosed) panelSelect();
   }
 
   async function loadEasterns() {
@@ -381,7 +381,7 @@ function toggleDescriptionPanel() {
     showSummary();
     updateDescription('<p>Easterns in Wilmington, NC. This end-of-season event features the strongest teams nationwide and serves as a key test before Nationals. Entering as the 5th seed, Ego would go 3-1 in pool play, dropping a close game to 4th seeded Colorado. The team would respond with a resounding quarterfinals victory over 3rd seeded Carleton, but would go on to lose the semifinal game against Massachusetts. Not deterred, Oregon Ego proceeded to beat 1st seeded North Carolina in the final game of the weekend to secure 3rd place and a 5-2 record. View the full tournament results <a href="https://play.usaultimate.org/events/Easterns-2025/schedule/Men/CollegeMen/division_1/" target="_blank" style="color: #aad8ff; text-decoration: underline;">here</a><figure><img src="https://github.com/MasonW02/GEOG492/blob/main/Assignments/project_images/boon.jpg?raw=true" alt="easterns_img" width="300" height="400"><figcaption>Oregon player Julian Saunt rises for the disc against Georgia at Easterns. Photo: Brennan Horrisberger - brennanberger.smugmug.com</figcaption></figure></p>');
     if (!panelOpen) toggleDescriptionPanel();
-    if (!state.panelOpen) panelSelect();
+    if (!state.panelClosed) panelSelect();
   }
 
   map.on('load', loadPresDay); //on site load, the President's Day Invite map will be displayed 
