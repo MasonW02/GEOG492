@@ -66,7 +66,7 @@ button:hover {
     z-index: 2;
     width: 400px;
     height: 65px;
-    background: rgba(80, 80, 80, .75);
+    background: rgba(80, 80, 80, .80);
     transition: width 2s, height 2s;
     overflow: hidden;
     border-radius: 7px;
@@ -124,6 +124,7 @@ button:hover {
     center: [-121, 39],
     zoom: 5
   });
+  map.dragRotate.disable();
 
   const markers = [];
   let routeIds = [];
@@ -270,7 +271,7 @@ function toggleDescriptionPanel() {
     toggle.textContent = '▲';
     descriptionText.style.display = 'none';
   } else {
-    panel.style.height = '300px';
+    panel.style.height = '249px';
     toggle.textContent = '▼';
     descriptionText.style.display = 'block';
   }
