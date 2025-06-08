@@ -7,112 +7,114 @@
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js"></script>
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css" rel="stylesheet" />
   <style>
-    body { margin: 0; padding: 0; font-family: sans-serif; }
-    #map { position: absolute; top: 40px; bottom: 0; width: 100%; }
-    #buttons-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
-  align-items: center;
-  background: #fff;
-  padding: 5px 10px;
-  z-index: 1;
-  box-shadow: 0 1px 5px rgba(0,0,0,0.3);
-  gap: 10px;
-}
-
-#buttons {
-  display: flex;
-  gap: 10px;
-}
-
-#blurb {
-  font-size: 14px;
-  color: #0c6d10;
-  white-space: nowrap;
-}
-
-button {
-  cursor: pointer;
-  padding: 6px 12px;
-  font-size: 14px;
-  border: none;
-  background: #0e8e13;
-  color: white;
-  border-radius: 4px;
-}
-
-button:hover {
-  background: #0c6d10;
-}
+    body {margin: 0; padding: 0; font-family: sans-serif;}
     
-.popup-summary {
-  position: absolute;
-  top: 50px;
-  right: 20px;
-  background: rgba(255,255,255,0.9);
-  padding: 10px;
-  border-radius: 6px;
-  box-shadow: 0 0 5px rgba(0,0,0,0.2);
-  z-index: 2;
-  font-size: 14px;
-}
-
- .descriptionPanel {
-    position: absolute;
-    bottom: 65px;
-    left: 20px;
-    z-index: 2;
-    width: 500px;
-    height: 65px;
-    background: rgba(80, 80, 80, .80);
-    transition: width 2s, height 2s;
-    overflow: hidden;
-    border-radius: 7px;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
+    #map {position: absolute; top: 40px; bottom: 0; width: 100%;}
+    
+    #buttons-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      align-items: center;
+      background: #fff;
+      padding: 5px 10px;
+      z-index: 1;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.3);
+      gap: 10px;
     }
 
-   .layerDescription {
-     color: white;
-     padding-left: 10px;
-   }
+    #buttons {
+      display: flex;
+      gap: 10px;
+    }
 
-  p {
-     color: white;
-   }
+    #blurb {
+      font-size: 14px;
+      color: #0c6d10;
+      white-space: nowrap;
+    }
 
-  h4 {
-   color: white;
- }
+    button {
+      cursor: pointer;
+      padding: 6px 12px;
+      font-size: 14px;
+      border: none;
+      background: #0e8e13;
+      color: white;
+      border-radius: 4px;
+    }
+
+    button:hover {
+      background: #0c6d10;
+    }
+    
+    .popup-summary {
+      position: absolute;
+      top: 50px;
+      right: 20px;
+      background: rgba(255,255,255,0.9);
+      padding: 10px;
+      border-radius: 6px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.2);
+      z-index: 2;
+      font-size: 14px;
+    }
+
+   .descriptionPanel {
+      position: absolute;
+      bottom: 65px;
+      left: 20px;
+      z-index: 2;
+      width: 500px;
+      height: 65px;
+      background: rgba(80, 80, 80, .80);
+      transition: width 2s, height 2s;
+      overflow: hidden;
+      border-radius: 7px;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      }
+
+     .layerDescription {
+       color: white;
+       padding-left: 10px;
+     }
+
+    p {
+       color: white;
+     }
+
+    h4 {
+      color: white;
+    }
     
   </style>
 </head>
 <body>
   
-<div id="buttons-container">
-  <div id="blurb">Oregon Ego Ultimate Frisbee 2025 Regular Season Travel Tournaments:</div>
-  <div id="buttons">
-    <button onclick="loadSanDiegoTrip()">President's Day Invitational</button>
-    <button onclick="loadKnoxvilleTrip()">Smoky Mountain Invitational</button>
-    <button onclick="loadWilmingtonTrip()">Easterns</button>
+  <div id="buttons-container">
+    <div id="blurb">Oregon Ego Ultimate Frisbee 2025 Regular Season Travel Tournaments:</div>
+    <div id="buttons">
+      <button onclick="loadSanDiegoTrip()">President's Day Invitational</button>
+      <button onclick="loadKnoxvilleTrip()">Smoky Mountain Invitational</button>
+      <button onclick="loadWilmingtonTrip()">Easterns</button>
+    </div>
   </div>
-</div>
 
-<div id="map"></div>
-<div id="summary" class="popup-summary" style="display: none;"></div>
-<!-- map description panel -->
-<div class="descriptionPanel" id="descriptionPanel" style="height: 500px;">
-<div id="panelToggle" onclick="toggleDescriptionPanel()" style="text-align: center; cursor: pointer; color: white;">
-  ▼
-</div>
- <h4 style="margin-left: 10px;">Tournament Summary</h4>
- <p id="descriptionText" style="margin-left: 10px; margin-right: 10px;">
-   Temporary Filler Text
- </p>
-</div>
+  <div id="map"></div>
+  <div id="summary" class="popup-summary" style="display: none;"></div>
+  <!-- map description panel -->
+  <div class="descriptionPanel" id="descriptionPanel" style="height: 500px;">
+  <div id="panelToggle" onclick="toggleDescriptionPanel()" style="text-align: center; cursor: pointer; color: white;">
+    ▼
+  </div>
+   <h4 style="margin-left: 10px;">Tournament Summary</h4>
+   <p id="descriptionText" style="margin-left: 10px; margin-right: 10px;">
+     Temporary Filler Text
+   </p>
+  </div>
 
 
 <script>
@@ -163,7 +165,6 @@ button:hover {
     const route = json.routes[0].geometry;
     const distance = json.routes[0].distance; // in meters
     totalDrivingMiles += distance / 1609.34;
-
     map.addSource(id, {
       type: 'geojson',
       data: {
@@ -171,7 +172,6 @@ button:hover {
         geometry: route
       }
     });
-
     map.addLayer({
       id,
       type: 'line',
@@ -182,7 +182,6 @@ button:hover {
         'line-width': 4
       }
     });
-
     routeIds.push(id);
     return route.coordinates;
   }
@@ -293,6 +292,7 @@ function toggleDescriptionPanel() {
     if (!panelOpen) toggleDescriptionPanel();
     if (!state.panelOpen) panelSelect();
   } 
+  
   async function loadKnoxvilleTrip() {
     clearMap();
     const eugene = [-123.0707, 44.0435];
