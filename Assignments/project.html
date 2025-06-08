@@ -104,7 +104,7 @@ button:hover {
 <div id="map"></div>
 <div id="summary" class="popup-summary" style="display: none;"></div>
 <!-- map description panel -->
-<div class="descriptionPanel" id="descriptionPanel" style="height: 250px;">
+<div class="descriptionPanel" id="descriptionPanel" style="height: 500px;">
 <div id="panelToggle" onclick="toggleDescriptionPanel()" style="text-align: center; cursor: pointer; color: white;">
   ▼
 </div>
@@ -314,7 +314,7 @@ function toggleDescriptionPanel() {
 
     fitRoute([...car1, ...flight1, ...flight2, ...car2]);
     showSummary();
-    updateDescription('<p>Smoky Mountain Invitational in Knoxville, TN. A key mid-season tournament, it featured many of the top teams in the country this year and would present some adveristy for Ego, as they would drop games to 7th seed North Carolina in pool play and 1st seed Carleton in quarterfinals. Not to leave empty-handed, they would rebound to beat rivals Oregon State in the final game to secure fifth place and go 5-2 on the weekend. View the full tournament results <a href="https://play.usaultimate.org/events/Smoky-Mountain-Invite-2025/schedule/Men/CollegeMen/" target="_blank" style="color: #aad8ff; text-decoration: underline;">here</a><figure><img src="https://github.com/MasonW02/GEOG492/blob/main/Assignments/project_images/badarcus.png?raw=true" alt="smi_img" width="450" height="250"><figcaption>Marcus Beidler lays out for the disc at SMI</figcaption></figure></p>');
+    updateDescription('<p>Smoky Mountain Invitational in Knoxville, TN. A key mid-season tournament, it featured many of the top teams in the country this year and would present some adveristy for Ego, as they would drop games to 7th seed North Carolina in pool play and 1st seed Carleton in quarterfinals. Not to leave empty-handed, they would rebound to beat rivals Oregon State in the final game to secure fifth place and go 5-2 on the weekend. View the full tournament results <a href="https://play.usaultimate.org/events/Smoky-Mountain-Invite-2025/schedule/Men/CollegeMen/" target="_blank" style="color: #aad8ff; text-decoration: underline;">here</a><figure><img src="https://github.com/MasonW02/GEOG492/blob/main/Assignments/project_images/badarcus.png?raw=true" alt="smi_img" width="400" height="250"><figcaption>Marcus Beidler lays out for the disc at SMI</figcaption></figure></p>');
     if (!panelOpen) toggleDescriptionPanel();
     if (!state.panelOpen) panelSelect();
   }
