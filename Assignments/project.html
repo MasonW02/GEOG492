@@ -10,7 +10,8 @@
     body {margin: 0; padding: 0; font-family: sans-serif;}
     
     #map {position: absolute; top: 40px; bottom: 0; width: 100%;}
-    
+
+    /*Styling for the fly-to buttons container*/
     #buttons-container {
       position: absolute;
       top: 0;
@@ -29,12 +30,14 @@
       gap: 10px;
     }
 
+    /*styling for text blurb next to fly-to buttons*/
     #blurb {
       font-size: 14px;
       color: #0c6d10;
       white-space: nowrap;
     }
 
+    /*styling for fly-to buttons*/
     button {
       cursor: pointer;
       padding: 6px 12px;
@@ -45,10 +48,12 @@
       border-radius: 4px;
     }
 
+    /*on hover, button background color darkens*/
     button:hover {
       background: #0c6d10;
     }
-    
+
+    /*styling for distance travelled pop-up*/
     .popup-summary {
       position: absolute;
       top: 50px;
@@ -61,6 +66,7 @@
       font-size: 14px;
     }
 
+    /*styling for collapsable tournament summary panel*/
    .descriptionPanel {
       position: absolute;
       bottom: 65px;
@@ -81,43 +87,39 @@
        color: white;
        padding-left: 10px;
      }
-
-    p {
-       color: white;
-     }
-
-    h4 {
-      color: white;
-    }
     
   </style>
 </head>
 <body>
-  
+
+  <!-- div containing the fly-to buttons --> 
   <div id="buttons-container">
     <div id="blurb">Oregon Ego Ultimate Frisbee 2025 Regular Season Travel Tournaments:</div>
     <div id="buttons">
-      <button onclick="loadSanDiegoTrip()">President's Day Invitational</button>
-      <button onclick="loadKnoxvilleTrip()">Smoky Mountain Invitational</button>
-      <button onclick="loadWilmingtonTrip()">Easterns</button>
+      <!-- each button calls the corresponding function on click that loads the routes and info for that tournament, and clears the previous map -->
+      <button onclick="loadPresDay()">President's Day Invitational</button>
+      <button onclick="loadSMI()">Smoky Mountain Invitational</button>
+      <button onclick="loadEasterns()">Easterns</button>
     </div>
   </div>
 
-  <div id="map"></div>
-  <div id="summary" class="popup-summary" style="display: none;"></div>
-  <!-- map description panel -->
-  <div class="descriptionPanel" id="descriptionPanel" style="height: 500px;">
+  <div id="map"></div> <!-- map div --> 
+  <div id="summary" class="popup-summary" style="display: none;"></div> <!-- div containing summary of distance travelled pop-up -->
+  <div class="descriptionPanel" id="descriptionPanel" style="height: 500px;"> <!-- tournament description panel div -->
+  <!-- div for the clickable icon that toggles the collapseable description panel, calls function that alters panel height onclick -->
   <div id="panelToggle" onclick="toggleDescriptionPanel()" style="text-align: center; cursor: pointer; color: white;">
     ▼
   </div>
-   <h4 style="margin-left: 10px;">Tournament Summary</h4>
-   <p id="descriptionText" style="margin-left: 10px; margin-right: 10px;">
+   <h4 style="margin-left: 10px; color: white;">Tournament Summary</h4> 
+   <p id="descriptionText" style="margin-left: 10px; margin-right: 10px; color: white;">
      Temporary Filler Text
    </p>
   </div>
 
 
 <script>
+  //The 3 main functions of the script are the loadPresDay(), loadSMI(), and loadEasterns functions(), which are at the end of the script and control the functionality of the buttons
+  //Every other function in the script exists to be called at least once by one of these 3 main functions, with the exception of toggleDescriptionPanel() which can be called by clicking an icon
   mapboxgl.accessToken = 'pk.eyJ1IjoibWFzb253MDIiLCJhIjoiY205OTEzcXBpMDk0dTJpcHhseDl4dWNjOSJ9.tSqKSLEVU1A0vQ8kKHhxkw';
 
   const map = new mapboxgl.Map({
@@ -126,39 +128,48 @@
     center: [-121, 39],
     zoom: 5
   });
-  map.dragRotate.disable();
+  map.dragRotate.disable(); //disable the drag to rotate functionality
 
-  const markers = [];
-  let routeIds = [];
-  let totalDrivingMiles = 0;
-  let totalFlightMiles = 0;
+  const markers = [];            //empty array to store the markers for start, end, and intermediate locations
+  let routeIds = [];             //empty array to store the ID of each route layer (drive or flight segment) added to the map
+  let totalDrivingMiles = 0;     //initialize variable for total miles driven
+  let totalFlightMiles = 0;      //initialize variable for total miles flown
 
+  
   function clearMap() {
+    //loops through IDs of the layers displaying the routes and removes them from the map
     for (const id of routeIds) {
       if (map.getLayer(id)) map.removeLayer(id);
       if (map.getSource(id)) map.removeSource(id);
     }
     routeIds = [];
-
+    //loops through markers and removes them
     for (const marker of markers) {
       marker.remove();
     }
     markers.length = 0;
-
+    //reset distance travelled variables to 0
     totalDrivingMiles = 0;
     totalFlightMiles = 0;
     document.getElementById('summary').style.display = 'none';
   }
 
   function addMarker(coords, label, color) {
+    //coords is an array of two numbers designating coordinates in [long, lat] 
+    //label and color are both strings
+    //adds a marker to the map at the given location with the given label and color
     const marker = new mapboxgl.Marker({ color })
       .setLngLat(coords)
       .setPopup(new mapboxgl.Popup().setText(label))
       .addTo(map);
-    markers.push(marker);
+    markers.push(marker); //adds new marker to markers array
   }
 
   async function addDrivingRoute(start, end, id) {
+    //start and end are both an array of two numbers designating coordinates in [long, lat]
+    //id is a string
+    //adds a new layer to the map displaying the route driven from start point to end point using the Mapbox directions API
+    //ChatGPT was used when building this function, specifically in obtaining the route and distance travelled from the Mapbox API
     const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?geometries=geojson&access_token=${mapboxgl.accessToken}`;
     const res = await fetch(url);
     const json = await res.json();
@@ -182,11 +193,14 @@
         'line-width': 4
       }
     });
-    routeIds.push(id);
+    routeIds.push(id); //add new route layer ID to routeIDs array
     return route.coordinates;
   }
 
   function haversineDistance(coord1, coord2) {
+    //coord1 and coord2 are arrays representing coordinates in [long, lat] form
+    //uses the Haversine formula to estimate great-circle distance between the two coordinates, used for flight path distance approximation
+    //this function was written entirely by ChatGPT
     const toRad = d => d * Math.PI / 180;
     const R = 6371; // Earth radius in km
     const dLat = toRad(coord2[1] - coord1[1]);
@@ -199,7 +213,27 @@
     return R * c * 0.621371; // convert to miles
   }
 
+  function interpolateArc(coord1, coord2) {
+    //coord1 and coord2 are arrays representing coordinates in [long, lat] form
+    //generates coordinates for a line in the shape of a smooth arc between coord1 and coord2
+    //used to create the arced lines shown in the flight path layers
+    //this function was written entirely by ChatGPT
+    const steps = 50;
+    const arc = [];
+    for (let i = 0; i <= steps; i++) {
+      const lon = coord1[0] + (coord2[0] - coord1[0]) * (i / steps);
+      const lat = coord1[1] + (coord2[1] - coord1[1]) * (i / steps) + Math.sin((Math.PI * i) / steps) * 3;
+      arc.push([lon, lat]);
+    }
+    return arc;
+  }
+
   function addFlightArc(start, end, id) {
+    //start and end are arrays representing coordinates in [long, lat] form
+    //id is a string
+    //this is the function that actually adds a flight path layer to the map
+    //does so by calling interpolateArc() and haversineDistance() on start and end
+    //output of interpolateArc() added to map using provided ID, total flight miles updated with output of haversineDistance()
     const arc = {
       type: 'Feature',
       geometry: {
@@ -207,9 +241,7 @@
         coordinates: interpolateArc(start, end)
       }
     };
-
-    totalFlightMiles += haversineDistance(start, end);
-
+    
     map.addSource(id, {
       type: 'geojson',
       data: arc
@@ -226,117 +258,120 @@
         'line-dasharray': [2, 4]
       }
     });
-
+    
+    totalFlightMiles += haversineDistance(start, end); 
     routeIds.push(id);
     return arc.geometry.coordinates;
   }
 
-  function interpolateArc(start, end) {
-    const steps = 50;
-    const arc = [];
-    for (let i = 0; i <= steps; i++) {
-      const lon = start[0] + (end[0] - start[0]) * (i / steps);
-      const lat = start[1] + (end[1] - start[1]) * (i / steps) + Math.sin((Math.PI * i) / steps) * 3;
-      arc.push([lon, lat]);
-    }
-    return arc;
-  }
-
   function fitRoute(coordinates) {
+    //coordinates is a 2D array of coordinates in [long, lat] e.g. [[long, lat], [long, lat]....]
+    //adjusts the map view to ensure that all coordinates in the travel route are visible 
     const bounds = new mapboxgl.LngLatBounds();
     coordinates.forEach(coord => bounds.extend(coord));
     map.fitBounds(bounds, { padding: 60 });
   }
 
   function showSummary() {
+    //accesses the values of the total driving miles and total flight miles variables and uses them to update the distance travelled pop up
     const el = document.getElementById('summary');
     el.innerHTML = `Total Driving Distance: ${totalDrivingMiles.toFixed(1)} mi<br>Total Flying Distance: ${totalFlightMiles.toFixed(1)} mi`;
     el.style.display = 'block';
   }
 
 function updateDescription(html) {
+  //html is a string containing description text and html code pertaining to links, images, and formatting
+  //uses the innerHTML property to update the tournament description panel with the input
   document.getElementById('descriptionPanel').querySelector('p').innerHTML = html;
 }
 
-let panelOpen = true;
-
+let panelOpen = true; //on load, the description panel will be open
 function toggleDescriptionPanel() {
+  //provides the functionality for expanding and collapsing the tournament description panel
   const panel = document.getElementById('descriptionPanel');
   const toggle = document.getElementById('panelToggle');
   const descriptionText = panel.querySelector('p');
 
+  //if panel is open on click, then reduce the height and flip arrow up
   if (panelOpen) {
-    panel.style.height = '65px';  // enough for heading and arrow
+    panel.style.height = '65px';  
     toggle.textContent = '▲';
     descriptionText.style.display = 'none';
-  } else {
+  } 
+  //if panel is closed on click, then increase height and flip arrow down
+  else {
     panel.style.height = '500px';
     toggle.textContent = '▼';
     descriptionText.style.display = 'block';
   }
 
-  panelOpen = !panelOpen;
+  panelOpen = !panelOpen; //panelOpen state updated (if True, becomes False, and vice verse)
 }
 
-  async function loadSanDiegoTrip() {
-    clearMap();
-    const start = [-123.0707, 44.0435];
-    const end = [-117.1755, 32.8210];
-    addMarker(start, "Start: McArthur Court", 'green');
+  async function loadPresDay() {
+    //loads the route layers, distance figures, and text pertaining to the President's Day Invitational tournament
+    clearMap();  //begin by calling clearMap()
+    const start = [-123.0707, 44.0435];  //coordinates of McArthur Court, where the team meets and departs in the club sports vans 
+    const end = [-117.1755, 32.8210];    //coordinates of our hotel in San Diego
+    addMarker(start, "Start: McArthur Court", 'green');    //add coordinates as markers
     addMarker(end, "End: California Suites Hotel", 'red');
 
-    const coords = await addDrivingRoute(start, end, 'sd-route');
-    fitRoute(coords);
-    showSummary();
+    const coords = await addDrivingRoute(start, end, 'sd-route');  //call addDrivingRoute() on start and end to create driving route layer, add it to map
+    fitRoute(coords);  //call fitRoute() on output of addDrivingRoute() to adjust map view according to route displayed
+    showSummary();     //call showSummary() to update the distance travelled popup with latest values of distance travelled variables
+    //call updateDescription() to update the collapsable tournament description panel, the input of this call makes up the entirety of the content of the panel
     updateDescription('<p>Presidents Day Invitational in San Diego, CA. This mid-Febuary tournament kicks off the season and regularly features the top west coast programs. Oregon Ego got off to a hot start to their season at this tournament, winning all their games to go 8-0 on the weekend, including key victories over rivals Colarado and Oregon State in the semifinals and finals, respectively. View the full tournament results <a href="https://play.usaultimate.org/events/Presidents-Day-Invite-2025/schedule/Men/CollegeMen/" target="_blank" style="color: #aad8ff; text-decoration: underline;">here</a><figure><img src="https://cdn.ultiworld.com/wordpress/wp-content/uploads/2025/02/pdi_wcb_65282_20250217_134257-ZF-7571-76694-1-001.jpg" alt="prez_day_img" width="400" height="270"><figcaption>Ego Captain Mica Class is guarded by OSU captain Ben Thoennes during the final. Photo: William ‘Brody’ Brotman – Ultiphotos.com</figcaption></figure></p>');
-    if (!panelOpen) toggleDescriptionPanel();
+    if (!panelOpen) toggleDescriptionPanel();  //description panel starts open
     if (!state.panelOpen) panelSelect();
-  } 
+  }
   
-  async function loadKnoxvilleTrip() {
-    clearMap();
-    const eugene = [-123.0707, 44.0435];
-    const pdx = [-122.5951, 45.5887];
-    const dfw = [-97.0403, 32.8998];
-    const tys = [-83.9940, 35.8101];
-    const hotel = [-84.0672, 35.9244];
+  async function loadSMI() {
+    //loads the route layers, distance figures, and text pertaining to the Smoky Mountain Invitational
+    clearMap();  //being by clearing the map of previous data
+    const eugene = [-123.0707, 44.0435];  //McArthur Court coords
+    const pdx = [-122.5951, 45.5887];     //Portland Aiport coords
+    const dfw = [-97.0403, 32.8998];      //Dallas-Fort Worth Aiport coords
+    const tys = [-83.9940, 35.8101];      //Tyson-McGhee Airport coords
+    const hotel = [-84.0672, 35.9244];    //Knoxville hotel coords
 
-    addMarker(eugene, "Start: McArthur Court", 'green');
+    addMarker(eugene, "Start: McArthur Court", 'green');        //add markers for each set of coordinates
     addMarker(pdx, "Portland International Airport", 'orange');
     addMarker(dfw, "Dallas Fort Worth Airport", 'orange');
     addMarker(tys, "McGhee Tyson Airport", 'orange');
     addMarker(hotel, "End: Holiday Inn Knoxville West", 'red');
 
-    const car1 = await addDrivingRoute(eugene, pdx, 'drive1');
-    const flight1 = addFlightArc(pdx, dfw, 'flight1');
-    const flight2 = addFlightArc(dfw, tys, 'flight2');
-    const car2 = await addDrivingRoute(tys, hotel, 'drive2');
+    const car1 = await addDrivingRoute(eugene, pdx, 'drive1');  //adds layer displaying drive from Eugene to Portland airport
+    const flight1 = addFlightArc(pdx, dfw, 'flight1');          //adds layer displaying flight arc from PDX to DFW
+    const flight2 = addFlightArc(dfw, tys, 'flight2');          //adds layer displaying flight arc from DFW to Tyson-McGhee
+    const car2 = await addDrivingRoute(tys, hotel, 'drive2');   //adds layer displaying drive from Tyson-McGhee to hotel 
 
-    fitRoute([...car1, ...flight1, ...flight2, ...car2]);
-    showSummary();
+    fitRoute([...car1, ...flight1, ...flight2, ...car2]);  //flattenning operator used when calling fitRoute() to ensure input remains a 2D array
+    showSummary();  //update distance travelled summary
+    //update collapsable tournament description panel
     updateDescription('<p>Smoky Mountain Invitational in Knoxville, TN. A key mid-season tournament, it featured many of the top teams in the country this year and would present some adveristy for Ego, as they would drop games to 7th seed North Carolina in pool play and 1st seed Carleton in quarterfinals. Not to leave empty-handed, they would rebound to beat rivals Oregon State in the final game to secure fifth place and go 5-2 on the weekend. View the full tournament results <a href="https://play.usaultimate.org/events/Smoky-Mountain-Invite-2025/schedule/Men/CollegeMen/" target="_blank" style="color: #aad8ff; text-decoration: underline;">here</a><figure><img src="https://github.com/MasonW02/GEOG492/blob/main/Assignments/project_images/badarcus.png?raw=true" alt="smi_img" width="400" height="250"><figcaption>Marcus Beidler lays out for the disc at SMI. Photo: William ‘Brody’ Brotman – Ultiphotos.com</figcaption></figure></p>');
-    if (!panelOpen) toggleDescriptionPanel();
+    if (!panelOpen) toggleDescriptionPanel();  //panel starts open
     if (!state.panelOpen) panelSelect();
   }
 
-  async function loadWilmingtonTrip() {
-    clearMap();
-    const eugene = [-123.0707, 44.0435];
-    const pdx = [-122.5951, 45.5887];
-    const den = [-104.6737, 39.8561];
-    const rdu = [-78.7875, 35.8801];
-    const hotel = [-77.8646, 34.2413];
+  async function loadEasterns() {
+    //loads the route layers, distance figures, and text pertaining to Easterns
+    clearMap();  //being by clearing the map of previous data
+    const eugene = [-123.0707, 44.0435];  //McArthur Court coords
+    const pdx = [-122.5951, 45.5887];     //PDX coords
+    const den = [-104.6737, 39.8561];     //Denver Airport Coords
+    const rdu = [-78.7875, 35.8801];      //Raleigh-Durham Airport Coords
+    const hotel = [-77.8646, 34.2413];    //Wilmington hotel coords
 
-    addMarker(eugene, "Start: McArthur Court", 'green');
+    addMarker(eugene, "Start: McArthur Court", 'green');       //add markers for all coordinate pairs
     addMarker(pdx, "Portland International Airport", 'orange');
     addMarker(den, "Denver International Airport", 'orange');
     addMarker(rdu, "Raleigh-Durham Airport", 'orange');
     addMarker(hotel, "End: Tru by Hilton Wilmington", 'red');
 
-    const car1 = await addDrivingRoute(eugene, pdx, 'wilm-drive1');
-    const flight1 = addFlightArc(pdx, den, 'wilm-flight1');
-    const flight2 = addFlightArc(den, rdu, 'wilm-flight2');
-    const car2 = await addDrivingRoute(rdu, hotel, 'wilm-drive2');
+    const car1 = await addDrivingRoute(eugene, pdx, 'wilm-drive1');  //adds layer displaying drive from Eugene to Portland airport
+    const flight1 = addFlightArc(pdx, den, 'wilm-flight1');          //adds layer displaying flight arc from PDX to DEN
+    const flight2 = addFlightArc(den, rdu, 'wilm-flight2');          //adds layer displaying flight arc from DEN to RDU
+    const car2 = await addDrivingRoute(rdu, hotel, 'wilm-drive2');   //adds layer displaying drive from RDU to hotel in Wilmington
 
     fitRoute([...car1, ...flight1, ...flight2, ...car2]);
     showSummary();
@@ -345,7 +380,7 @@ function toggleDescriptionPanel() {
     if (!state.panelOpen) panelSelect();
   }
 
-  map.on('load', loadSanDiegoTrip);
+  map.on('load', loadPresDay); //on site load, the President's Day Invite map will be displayed 
   
 </script>
 </body>
