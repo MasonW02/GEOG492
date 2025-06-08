@@ -384,7 +384,8 @@ function toggleDescriptionPanel() {
     if (!state.panelClosed) panelSelect();
   }
 
-  map.on('load', loadPresDay); //on site load, the President's Day Invite map will be displayed 
+  map.on('load', loadPresDay);  //on site load, the President's Day Invite map will be displayed 
+  map.on('load', toggleDescriptionPanel);  //on site load, close the description panel, as the above call opens it
   
 </script>
 </body>
