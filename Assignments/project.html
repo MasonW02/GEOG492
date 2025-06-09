@@ -178,8 +178,8 @@
     const res = await fetch(url);
     const json = await res.json();
     const route = json.routes[0].geometry;
-    const distance = json.routes[0].distance; // in meters
-    totalDrivingMiles += distance / 1609.34;
+    const distance = json.routes[0].distance;  // in meters
+    totalDrivingMiles += distance / 1609.34;  //convert to miles
     map.addSource(id, {
       type: 'geojson',
       data: {
@@ -263,8 +263,8 @@
       }
     });
     
-    totalFlightMiles += haversineDistance(start, end); 
-    routeIds.push(id);
+    totalFlightMiles += haversineDistance(start, end);  //update total flight miles variable
+    routeIds.push(id);                                 //add id to routeIDs array
     return arc.geometry.coordinates;
   }
 
@@ -353,7 +353,7 @@ function toggleDescriptionPanel() {
     showSummary();  //update distance travelled summary
     //update collapsable tournament description panel
     updateDescription('<p>Smoky Mountain Invitational in Knoxville, TN. A key mid-season tournament, it featured many of the top teams in the country this year and would present some adveristy for Ego, as they would drop games to 7th seed North Carolina in pool play and 1st seed Carleton in quarterfinals. Not to leave empty-handed, they would rebound to beat rivals Oregon State in the final game to secure fifth place and go 5-2 on the weekend. View the full tournament results <a href="https://play.usaultimate.org/events/Smoky-Mountain-Invite-2025/schedule/Men/CollegeMen/" target="_blank" style="color: #aad8ff; text-decoration: underline;">here</a><figure><img src="https://github.com/MasonW02/GEOG492/blob/main/Assignments/project_images/badarcus.png?raw=true" alt="smi_img" width="400" height="250"><figcaption>Marcus Beidler lays out for the disc at SMI. Photo: William ‘Brody’ Brotman – Ultiphotos.com</figcaption></figure></p>');
-    if (!panelClosed) toggleDescriptionPanel();  //panel starts open
+    if (!panelClosed) toggleDescriptionPanel();  //panel starts closed
     if (!state.panelClosed) panelSelect();
   }
 
